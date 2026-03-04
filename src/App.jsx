@@ -9,11 +9,11 @@ import Footer from "./components/Footer";
 // Public pages
 import Home from './pages/Home';
 import WhoWeAre from "./pages/WhoWeAre/WhoWeAre";
-import OurHistory from './pages/whoweare/OurHistory';
-import QuickFacts from './pages/whoweare/QuickFacts';
-import OurLeadership from './pages/whoweare/OurLeadership';
-import WhatWeBelieve from './pages/whoweare/WhatWeBelieve';
-import MissionVision from './pages/whoweare/MissionVision';
+import OurHistory from './pages/Whoweare/OurHistory';
+import QuickFacts from './pages/Whoweare/QuickFacts';
+import OurLeadership from './pages/Whoweare/OurLeadership';
+import WhatWeBelieve from './pages/Whoweare/WhatWeBelieve';
+import MissionVision from './pages/Whoweare/MissionVision';
 
 import Sermons from './pages/Sermons';
 import ExploreHeritage from './pages/Explore/ExploreHeritage';
