@@ -8,31 +8,15 @@ import Footer from "./components/Footer";
 
 // Public pages
 import Home from './pages/Home';
-import WhoWeAre from "./pages/whoweare/AboutUs";
-import OurHistory from './pages/whoweare/OurJourney';
-import QuickFacts from './pages/whoweare/HeritageInNumbers';
-import OurLeadership from './pages/whoweare/OurShepherds';
-import WhatWeBelieve from './pages/whoweare/WhatWeBelieve';
-import MissionVision from './pages/whoweare/OurPurpose';
+// Fix: Import from 'About' folder and ensure component name matches usage below
+import WhoWeAre from "./pages/About/AboutUs"; 
+import OurHistory from './pages/About/OurJourney';
+import QuickFacts from './pages/About/HeritageInNumbers';
+import OurLeadership from './pages/About/OurShepherds';
+import WhatWeBelieve from './pages/About/WhatWeBelieve';
+import MissionVision from './pages/About/OurPurpose';
 
-import Sermons from './pages/Sermons';
-import ExploreHeritage from './pages/Explore/ExploreHeritage';
-import AmNewHere from './pages/Explore/AmNewHere';
-import Testimony from './pages/Explore/Testimony';
-import ContactUs from './pages/Explore/ContactUs';
-import PrayerRequest from './pages/Explore/PrayerRequest';
-import Counselling from './pages/Explore/Counselling';
-import UpdateProfilePage from './pages/Explore/UpdateProfilePage';
-import Birthday from './pages/Explore/Birthday';
-import Giving from './pages/Giving';
-import Icare from './pages/Icare';
-import LiveService from './pages/LiveService';
-import FellowshipPage from './pages/Fellowship';
-
-// Admin pages
-import Login from './pages/admin/Login';
-import Dashboard from './pages/admin/Dashboard';
-import PrivateAdminRoute from './pages/admin/PrivateAdminRoute';
+// ... (keep other imports the same)
 
 function App() {
   return (
@@ -41,8 +25,9 @@ function App() {
         <Navbar />
         <main className="main-content">
           <Routes>
-            {/* Public routes */}
             <Route path="/" element={<Home />} />
+            
+            {/* The element name 'WhoWeAre' now matches the import above */}
             <Route path="/who-we-are" element={<WhoWeAre />}>
               <Route path="history" element={<OurHistory />} />
               <Route path="facts" element={<QuickFacts />} />
@@ -51,40 +36,7 @@ function App() {
               <Route path="mission-vision" element={<MissionVision />} />
             </Route>
 
-            <Route path="/sermons" element={<Sermons />} />
-            <Route path="/live-service" element={<LiveService />} />
-            <Route path="/explore-heritage" element={<ExploreHeritage />}>
-              <Route path="am-new-here" element={<AmNewHere />} />
-              <Route path="testimony" element={<Testimony />} />
-              <Route path="contact-us" element={<ContactUs />} />
-              <Route path="prayer-request" element={<PrayerRequest />} />
-              <Route path="birthday" element={<Birthday />} />
-              <Route path="update-profile" element={<UpdateProfilePage />} />
-              <Route path="counselling" element={<Counselling />} />
-            </Route>
-
-            <Route path="/icare" element={<Icare />} />
-            <Route path="/giving" element={<Giving />} />
-            <Route path="/fellowships/:type" element={<FellowshipPage />} />
-
-            {/* Admin routes */}
-            <Route path="/admin/login" element={<Login />} />
-            <Route
-              path="/admin/dashboard"
-              element={
-                <PrivateAdminRoute>
-                  <Dashboard />
-                </PrivateAdminRoute>
-              }
-            />
-            <Route
-              path="/admin/testimony"
-              element={
-                <PrivateAdminRoute>
-                  <Testimony />
-                </PrivateAdminRoute>
-              }
-            />
+            {/* ... (rest of your routes) */}
           </Routes>
         </main>
         <Footer />
