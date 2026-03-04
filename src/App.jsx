@@ -8,22 +8,22 @@ import Footer from "./components/Footer";
 
 // Public pages
 import Home from './pages/Home';
-import WhoWeAre from "./pages/WhoWeAre/WhoWeAre";
-import OurHistory from './pages/WhoWeAre/OurHistory';
-import QuickFacts from './pages/WhoWeAre/QuickFacts';
-import OurLeadership from './pages/WhoWeAre/OurLeadership';
-import WhatWeBelieve from './pages/WhoWeAre/WhatWeBelieve';
-import MissionVision from './pages/WhoWeAre/MissionVision';
+import WhoWeAre from "./pages/whoweare/WhoWeAre";
+import OurHistory from './pages/whoweare/OurHistory';
+import QuickFacts from './pages/whoweare/QuickFacts';
+import OurLeadership from './pages/whoweare/OurLeadership';
+import WhatWeBelieve from './pages/whoweare/WhatWeBelieve';
+import MissionVision from './pages/whoweare/MissionVision';
 
 import Sermons from './pages/Sermons';
-import ExploreHeritage from './pages/Explore/ExploreHeritage';
-import AmNewHere from './pages/Explore/AmNewHere';
-import Testimony from './pages/Explore/Testimony';
-import ContactUs from './pages/Explore/ContactUs';
-import PrayerRequest from './pages/Explore/PrayerRequest';
-import Counselling from './pages/Explore/Counselling';
-import UpdateProfilePage from './pages/Explore/UpdateProfilePage';
-import Birthday from './pages/Explore/Birthday';
+import ExploreHeritage from './pages/explore/ExploreHeritage';
+import AmNewHere from './pages/explore/AmNewHere';
+import Testimony from './pages/explore/Testimony';
+import ContactUs from './pages/explore/ContactUs';
+import PrayerRequest from './pages/explore/PrayerRequest';
+import Counselling from './pages/explore/Counselling';
+import UpdateProfilePage from './pages/explore/UpdateProfilePage';
+import Birthday from './pages/explore/Birthday';
 import Giving from './pages/Giving';
 import Icare from './pages/Icare';
 import LiveService from './pages/LiveService';
