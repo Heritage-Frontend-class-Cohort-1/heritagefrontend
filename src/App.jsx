@@ -8,7 +8,7 @@ import Footer from "./components/Footer";
 
 // Public pages
 import Home from './pages/Home';
-import WhoWeAre from './pages/whoweare/WhoWeAre';
+import WhoWeAre from "./pages/WhoWeAre/WhoWeAre";
 import OurHistory from './pages/whoweare/OurHistory';
 import QuickFacts from './pages/whoweare/QuickFacts';
 import OurLeadership from './pages/whoweare/OurLeadership';
