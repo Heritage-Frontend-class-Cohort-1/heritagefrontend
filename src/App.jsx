@@ -32,7 +32,7 @@ import FellowshipPage from './pages/Fellowship';
 // Admin pages
 import Login from './pages/admin/Login';
 import Dashboard from './pages/admin/Dashboard';
-import PrivateAdminRoute from './pages/admin/PrivateAdminRoute';
+git rm -r --cached .
 
 function App() {
   return (
