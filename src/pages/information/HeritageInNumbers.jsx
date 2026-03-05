@@ -1,7 +1,7 @@
 import React from "react";
 import pic003 from "../../assets/pic003.jpeg";
 
-const QuickFacts = () => {
+const HeritageInNumbers = () => {
   return (
     <section className="py-20 px-6 md:px-20 bg-white">
       <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-10">
@@ -67,4 +67,4 @@ const QuickFacts = () => {
   );
 };
 
-export default QuickFacts;
+export default HeritageInNumbers;

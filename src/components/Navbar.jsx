@@ -5,14 +5,14 @@ import { Menu, X, Church, ChevronDown } from "lucide-react";
 const navLinks = [
   { name: "Home", path: "/" },
   { 
-    name: "Who We Are", 
-    path: "/who-we-are",
+    name: "Information", 
+    path: "/information",
     children: [
-      { name: "Our History", path: "/who-we-are/history" },
-      { name: "Quick Facts", path: "/who-we-are/facts" },
-      { name: "Mission & Vision", path: "/who-we-are/mission-vision" },
-       { name: "What We Believe", path: "/who-we-are/believe" },
-      { name: "Our Leadership", path: "/who-we-are/leadership" },
+      { name: "Our Journey", path: "/information/journey" },
+      { name: "Heritage in Numbers", path: "/information/heritage-in-number" },
+      { name: "Mission & Vision", path: "/information/mission-vision" },
+       { name: "What We Believe", path: "/information/believe" },
+      { name: "Our Leadership", path: "/information/leadership" },
      
     ],
   },

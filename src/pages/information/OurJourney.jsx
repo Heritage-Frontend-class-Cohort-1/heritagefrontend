@@ -2,7 +2,7 @@ import React from "react";
 import { colors } from "../../utils/colors";
 import rcglogo from "../../assets/rcglogo.webp";
 
-const History = () => {
+const OurJourney = () => {
   return (
     <section
       className="relative py-20 px-6 md:px-20 bg-no-repeat"
@@ -85,4 +85,4 @@ const History = () => {
   );
 };
 
-export default History;
+export default OurJourney ;
