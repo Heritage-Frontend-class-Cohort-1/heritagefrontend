@@ -68,23 +68,23 @@ function App() {
             <Route path="/fellowships/:type" element={<FellowshipPage />} />
 
             {/* Admin routes */}
-            <Route path="/admin/login" element={<Login />} />
+            <Route path="/Admin/login" element={<Login />} />
             <Route
-              path="/admin/dashboard"
+              path="/Admin/dashboard"
               element={
                 <PrivateAdminRoute>
                   <Dashboard />
                 </PrivateAdminRoute>
               }
             />
-            <Route
-              path="/admin/testimony"
+            {/* <Route
+              path="/Admin/testimony"
               element={
                 <PrivateAdminRoute>
                   <Testimony />
                 </PrivateAdminRoute>
               }
-            />
+            /> */}
           </Routes>
         </main>
         <Footer />
