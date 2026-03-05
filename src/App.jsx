@@ -32,6 +32,7 @@ import FellowshipPage from './pages/Fellowship';
 // Admin pages
 import Login from './pages/admin/Login';
 import Dashboard from './pages/admin/Dashboard';
+import PrivateAdminRoute from './pages/admin/PrivateAdminroute';
 
 
 function App() {
@@ -69,6 +70,7 @@ function App() {
 
             {/* Admin routes */}
             <Route path="/Admin/login" element={<Login />} />
+
             <Route
               path="/Admin/dashboard"
               element={
