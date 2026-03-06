@@ -256,9 +256,7 @@ const Home = () => {
           </div>
           <h3 className="text-lg font-bold text-gray-900 uppercase">{group.title}</h3>
           {/* Subtle indicator that it opens in a new tab */}
-          <span className="text-[10px] text-amber-500 font-bold opacity-0 group-hover:opacity-100 transition-opacity mt-2">
-            OPEN IN NEW TAB ↗
-          </span>
+          
         </a>
       ))}
     </div>
