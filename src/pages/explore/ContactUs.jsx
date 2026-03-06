@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Mail, Phone, MapPin, Clock, Send, CheckCircle, Loader2 } from "lucide-react";
 
-const API_URL = "https://backend-heritage-1.onrender.com";
+const API_URL = "https://backend-heritage-6.onrender.com";
 
 const colors = {
   deepNavy: "#0B1B3F",

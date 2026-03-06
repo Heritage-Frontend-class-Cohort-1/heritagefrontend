@@ -15,7 +15,7 @@ const colors = {
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
 const MemberForm = ({ memberId, existingData }) => {
-  const API_URL = import.meta.env.VITE_API_URL || "https://backend-heritage-1.onrender.com";
+  const API_URL = import.meta.env.VITE_API_URL || "https://backend-heritage-6.onrender.com";
 
   const [formData, setFormData] = useState({
     firstName: existingData?.firstName || "",

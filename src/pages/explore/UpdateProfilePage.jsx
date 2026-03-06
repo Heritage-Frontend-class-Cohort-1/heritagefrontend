@@ -32,7 +32,7 @@ const UpdateProfilePage = () => {
   const [updateSuccess, setUpdateSuccess] = useState(false); // New state for success mark
   const [message, setMessage] = useState("");
 
-  const API_URL = import.meta.env.VITE_API_URL || "https://backend-heritage-1.onrender.com";
+  const API_URL = import.meta.env.VITE_API_URL || "https://backend-heritage-6.onrender.com";
 
   const handleVerifyPhone = async (e) => {
     e.preventDefault();
