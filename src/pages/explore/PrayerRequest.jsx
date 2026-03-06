@@ -9,13 +9,18 @@ const colors = {
 };
 
 const PrayerRequestForm = () => {
-  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
-  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Use environment variable for backend
-  const API_URL = import.meta.env.VITE_API_URL || "https://backend-heritage-6.onrender.com";
+  // Use your deployed backend URL directly
+  const BACKEND_URL = "https://backend-heritage-6.onrender.com"; // <-- replace with your Render backend
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,8 +31,9 @@ const PrayerRequestForm = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
+
     try {
-      const res = await fetch(`${API_URL}/api/prayers`, {
+      const res = await fetch(`${BACKEND_URL}/api/prayers`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -46,80 +52,125 @@ const PrayerRequestForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6" style={{ backgroundColor: colors.secondaryNavy }}>
-      <div className="max-w-xl w-full p-8 rounded-2xl shadow-xl" style={{ backgroundColor: colors.softCream }}>
-        
-        {/* Header */}
-        <h1 className="text-3xl font-bold mb-4 text-center" style={{ color: colors.deepNavy }}>
-          Prayer Request
-        </h1>
-        <p className="mb-6 text-center text-gray-700">
-          Share your prayer request. Our prayer team will stand with you in faith and confidentiality.
-        </p>
+    <div
+      className="min-h-screen flex items-center justify-center p-6"
+      style={{ backgroundColor: colors.secondaryNavy }}
+    >
+      <div
+        className="max-w-xl w-full p-6 shadow-xl rounded-2xl"
+        style={{ backgroundColor: colors.softCream }}
+      >
+        {/* Declaration Section */}
+        <div
+          className="mb-6 p-6 rounded-lg"
+          style={{ backgroundColor: colors.gold }}
+        >
+          <h2
+            className="text-2xl font-bold mb-2 text-center"
+            style={{ color: colors.deepNavy }}
+          >
+            SHOUT HALLELUJAH!
+          </h2>
 
-        {/* Error message */}
-        {error && (
-          <div className="p-4 mb-4 rounded-lg bg-red-100 text-red-700 text-center">{error}</div>
-        )}
+          <p className="leading-relaxed text-justify mb-4" style={{ color: colors.deepNavy }}>
+            I decree and declare, I am lifted from the ash heap to a place of honor, for
+            “He raises the poor from the dust and lifts the needy from the ash heap; He seats them with princes and has them inherit a throne of honor” (1 Samuel 2:8).
+          </p>
 
-        {/* Form or Thank You */}
+          <p className="leading-relaxed text-justify mb-4" style={{ color: colors.deepNavy }}>
+            I am positioned according to God’s perfect plan, for
+            “God arranged the members in the body, each one of them, as He chose” (1 Corinthians 12:18).
+          </p>
+
+          <p className="leading-relaxed text-justify mb-4" style={{ color: colors.deepNavy }}>
+            I walk through open doors of divine opportunity, for
+            “I have placed before you an open door that no one can shut” (Revelation 3:8).
+          </p>
+
+          <p className="leading-relaxed text-justify mb-4" style={{ color: colors.deepNavy }}>
+            I arise and shine into a season of landmark testimonies, for
+            “Arise, shine, for your light has come, and the glory of the Lord has risen upon you” (Isaiah 60:1).
+          </p>
+
+          <p className="font-semibold text-center" style={{ color: colors.deepNavy }}>
+            So shall it be, and so I declare—my testimony is changing, my season is shifting, and my destiny is secured in Christ!
+          </p>
+        </div>
+
         {!submitted ? (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <input
-              type="text"
-              name="name"
-              placeholder="Your Name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className="w-full p-3 rounded border border-gray-300"
-              style={{ backgroundColor: colors.offWhite }}
-            />
-            <input
-              type="email"
-              name="email"
-              placeholder="Email (optional)"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full p-3 rounded border border-gray-300"
-              style={{ backgroundColor: colors.offWhite }}
-            />
-            <textarea
-              name="message"
-              placeholder="Write your prayer request here..."
-              value={formData.message}
-              onChange={handleChange}
-              required
-              rows="6"
-              className="w-full p-3 rounded border border-gray-300"
-              style={{ backgroundColor: colors.offWhite }}
-            />
-            <button
-              type="submit"
-              className={`w-full py-3 rounded-lg font-semibold text-white transition ${loading ? "opacity-70 cursor-not-allowed" : "hover:brightness-110"}`}
-              style={{ backgroundColor: colors.deepNavy }}
-              disabled={loading}
+          <>
+            <h2
+              className="text-2xl font-bold mb-4 text-center"
+              style={{ color: colors.deepNavy }}
             >
-              {loading ? "Submitting..." : "Submit Prayer Request"}
-            </button>
-          </form>
+              Prayer Request
+            </h2>
+
+            <p className="mb-6 text-center" style={{ color: colors.deepNavy }}>
+              Share your prayer request. Our prayer team will stand with you in faith and confidentiality.
+            </p>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <input
+                type="text"
+                name="name"
+                placeholder="Your Name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                className="w-full p-3 rounded"
+                style={{ backgroundColor: colors.offWhite }}
+              />
+
+              <input
+                type="email"
+                name="email"
+                placeholder="Email (optional)"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full p-3 rounded"
+                style={{ backgroundColor: colors.offWhite }}
+              />
+
+              <textarea
+                name="message"
+                placeholder="Write your prayer request here..."
+                value={formData.message}
+                onChange={handleChange}
+                required
+                rows="6"
+                className="w-full p-3 rounded"
+                style={{ backgroundColor: colors.offWhite }}
+              />
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 rounded-lg font-semibold"
+                style={{
+                  backgroundColor: colors.deepNavy,
+                  color: colors.gold,
+                }}
+              >
+                {loading ? "Submitting..." : "Submit Prayer Request"}
+              </button>
+            </form>
+          </>
         ) : (
           <div className="text-center py-10">
-            <h2 className="text-2xl font-bold mb-2" style={{ color: colors.deepNavy }}>
+            <h3
+              className="text-2xl font-bold mb-2"
+              style={{ color: colors.deepNavy }}
+            >
               Thank you!
-            </h2>
+            </h3>
             <p style={{ color: colors.deepNavy }}>
               Your prayer request has been received. Someone from our prayer team will lift it up in prayer and follow up if needed.
             </p>
-            <button
-              onClick={() => setSubmitted(false)}
-              className="mt-6 px-6 py-2 rounded-lg font-semibold text-white hover:brightness-110"
-              style={{ backgroundColor: colors.deepNavy }}
-            >
-              Submit Another
-            </button>
           </div>
         )}
+
+        {error && <p className="text-red-600 mt-4 text-center">{error}</p>}
       </div>
     </div>
   );

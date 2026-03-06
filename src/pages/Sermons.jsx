@@ -10,7 +10,7 @@ export default function SermonsPage() {
     const fetchSermons = async () => {
       try {
         const res = await fetch(
-          "https://backend-heritage-1.onrender.com/api/messages/pastor"
+          "https://backend-heritage-6.onrender.com/api/messages/pastor"
         );
         if (!res.ok) throw new Error("Failed to fetch sermons");
         const data = await res.json();

@@ -1,43 +1,99 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { Church } from "lucide-react";
+import { Church, Users, Heart, Users2, UserCircle } from "lucide-react";
 
 const FellowshipHeader = () => {
-  const navLinks = [
-    { name: "Youth & Adult", path: "/fellowships/youth-and-adult" },
-    { name: "Teenagers", path: "/fellowships/teenagers" },
-    { name: "Women", path: "/fellowships/women-fellowship" },
-    { name: "Men", path: "/fellowships/men-fellowship" },
+  const fellowshipLinks = [
+    {
+      name: "Youth & Adult",
+      path: "/fellowships/youth-and-adult",
+      icon: Users,
+      color: "amber",
+    },
+    {
+      name: "Teenagers",
+      path: "/fellowships/teenagers",
+      icon: Heart,
+      color: "rose",
+    },
+    {
+      name: "Women",
+      path: "/fellowships/women-fellowship",
+      icon: Users2,
+      color: "purple",
+    },
+    {
+      name: "Men",
+      path: "/fellowships/men-fellowship",
+      icon: UserCircle,
+      color: "blue",
+    },
   ];
 
   return (
-    <header className="bg-white shadow-md sticky top-0 z-50">
-      <div className="max-w-6xl mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
-        {/* Main Logo / Home Link */}
-        <NavLink to="/" className="flex items-center gap-2 text-amber-600 font-bold text-xl">
-          <Church size={24} />
-          <span className="text-gray-900">GRACE FELLOWSHIP</span>
-        </NavLink>
+    <header className="bg-gradient-to-r from-slate-900 to-indigo-950 text-white shadow-lg sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+        <div className="flex flex-col md:flex-row items-center justify-between py-4 md:py-5 gap-5 md:gap-0">
+          {/* Logo / Brand */}
+          <NavLink
+            to="/"
+            className="flex items-center gap-3 group transition-all duration-300 hover:scale-[1.02]"
+          >
+            <div className="bg-amber-500 p-2.5 rounded-xl shadow-md group-hover:rotate-6 transition-transform">
+              <Church size={28} className="text-white" />
+            </div>
+            <div className="flex flex-col">
+              <span className="font-bold text-xl md:text-2xl tracking-tight text-amber-400">
+                GRACE FELLOWSHIP
+              </span>
+              <span className="text-xs md:text-sm text-slate-300 font-medium -mt-1">
+                Building Community • Growing in Faith
+              </span>
+            </div>
+          </NavLink>
 
-        {/* The Navbar for Members */}
-        <nav className="flex flex-wrap justify-center gap-4 md:gap-8">
-          {navLinks.map((link) => (
-            <NavLink
-              key={link.path}
-              to={link.path}
-              className={({ isActive }) =>
-                `text-sm font-bold tracking-wide transition-all duration-200 pb-1 border-b-2 ${
-                  isActive 
-                    ? "text-amber-600 border-amber-600" 
-                    : "text-gray-500 border-transparent hover:text-amber-500"
-                }`
-              }
-            >
-              {link.name.toUpperCase()}
-            </NavLink>
-          ))}
-        </nav>
+          {/* Navigation */}
+          <nav className="flex flex-wrap justify-center md:justify-end gap-2 sm:gap-3 md:gap-5 lg:gap-7">
+            {fellowshipLinks.map((item) => (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className={({ isActive }) =>
+                  `group relative flex items-center gap-2.5 px-4 py-2.5 rounded-lg font-medium text-sm md:text-base transition-all duration-300 ${
+                    isActive
+                      ? `bg-white/15 text-white border-b-4 border-${item.color}-400 shadow-sm`
+                      : `text-slate-300 hover:text-white hover:bg-white/10`
+                  }`
+                }
+              >
+                <item.icon
+                  size={20}
+                  className={`transition-transform group-hover:scale-110 ${
+                    item.color === "amber"
+                      ? "text-amber-400"
+                      : item.color === "rose"
+                      ? "text-rose-400"
+                      : item.color === "purple"
+                      ? "text-purple-400"
+                      : "text-blue-400"
+                  }`}
+                />
+                <span>{item.name}</span>
+
+                {/* Subtle underline animation for hover */}
+                <span
+                  className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-transparent via-${item.color}-400 to-transparent transition-all duration-400 ${
+                    isActive ? "w-full" : "w-0 group-hover:w-full"
+                  }`}
+                />
+              </NavLink>
+            ))}
+          </nav>
+        </div>
       </div>
+
+      {/* Optional thin accent line at bottom */}
+      <div className="h-1 bg-gradient-to-r from-amber-500 via-rose-500 to-purple-500 opacity-80" />
     </header>
   );
 };
