@@ -123,7 +123,7 @@ const Home = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center">
-            <Link to="/who-we-are/facts" className="w-full sm:w-auto px-8 md:px-10 py-3 md:py-4 bg-amber-500 text-[#0B1B3F] font-black rounded-full hover:bg-amber-400 transition shadow-xl flex items-center justify-center">
+            <Link to="/information/heritage-in-number" className="w-full sm:w-auto px-8 md:px-10 py-3 md:py-4 bg-amber-500 text-[#0B1B3F] font-black rounded-full hover:bg-amber-400 transition shadow-xl flex items-center justify-center">
               Learn More <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
             <Link to="/live-service" className="w-full sm:w-auto px-8 md:px-10 py-3 md:py-4 border-2 border-white/80 backdrop-blur-md bg-white/5 rounded-full hover:bg-white hover:text-[#0B1B3F] font-black transition-all shadow-lg flex items-center justify-center">

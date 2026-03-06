@@ -12,10 +12,10 @@ import {
 
 const Footer = () => {
   const quickLinks = [
-    { name: "Quick-Facts", path: "/who-we-are/facts" },
+    { name: "About Us", path: "/information/heritage-in-number" },
     { name: "Our Sermons", path: "/sermons" },
     { name: "PrayerRequest", path: "/explore-heritage/prayer-request" },
-    { name: "Contact Us", path: "/explore-heritage/contact" },
+    { name: "Contact Us", path: "/explore-heritage/contact-us" },
     { name: "iCare Welfare", path: "/icare" },
   ];
 
