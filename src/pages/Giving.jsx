@@ -1,468 +1,353 @@
 import { useState } from "react";
-import { Upload, Heart, Send, Copy, Check, Building, Smartphone, ArrowRight, Sparkles } from "lucide-react";
+import { Upload, Heart, Send, Copy, Check, Building, Phone } from "lucide-react";
 
 const colors = {
-  deepNavy: "#0B1B3F",
-  gold: "#FFD700",
-  softCream: "#FFF4E1",
-  offWhite: "#F8F8F8",
-  lightBlue: "#E8F0FE",
-  darkGold: "#E6C200",
+  navy:    "#0f1e44",
+  gold:    "#e9c94a",
+  cream:   "#fdfaf4",
+  white:   "#ffffff",
+  gray:    "#f8fafc",
+  muted:   "#64748b",
+  border:  "#e2e8f0",
 };
 
 const GivingConfirmation = () => {
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("Tithe");
   const [reference, setReference] = useState("");
-  const [paymentDate, setPaymentDate] = useState("");
+  const [date, setDate] = useState("");
   const [file, setFile] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [focusedField, setFocusedField] = useState(null);
+  const [focused, setFocused] = useState(null);
 
   const categories = ["Tithe", "Offering", "Building Fund", "Missions", "Welfare", "Other"];
-  
-  const churchAccount = {
+
+  const church = {
     bank: "UBA Bank",
-    accountName: "RCCG The Lord's Heritage House",
-    accountNumber: "1028674844",
+    name: "RCCG The Lord's Heritage House",
+    number: "1028674844",
   };
 
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile && selectedFile.size <= 5 * 1024 * 1024) {
-      setFile(selectedFile);
-    } else if (selectedFile) {
-      alert("File size must be less than 5MB");
-    }
+  const handleFile = (e) => {
+    const f = e.target.files?.[0];
+    if (f && f.size <= 5 * 1024 * 1024) setFile(f);
+    else if (f) alert("File must be under 5MB");
   };
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(churchAccount.accountNumber);
+  const copyAccount = () => {
+    navigator.clipboard.writeText(church.number);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setTimeout(() => setCopied(false), 1800);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!file) {
       alert("Please upload your payment receipt");
       return;
     }
-    
     setLoading(true);
     setTimeout(() => {
       setSubmitted(true);
       setLoading(false);
-    }, 1500);
+    }, 1400);
+  };
+
+  const reset = () => {
+    setSubmitted(false);
+    setAmount("");
+    setCategory("Tithe");
+    setReference("");
+    setDate("");
+    setFile(null);
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden" style={{ backgroundColor: colors.softCream }}>
-      {/* Animated Background */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-0 left-0 w-96 h-96 rounded-full opacity-10" style={{ backgroundColor: colors.gold, filter: "blur(100px)" }}></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full opacity-10" style={{ backgroundColor: colors.deepNavy, filter: "blur(100px)" }}></div>
-      </div>
-
-      {/* Floating Elements */}
-      <div className="absolute top-10 right-10 text-4xl animate-bounce z-0">💝</div>
-      <div className="absolute bottom-20 left-10 text-3xl animate-pulse z-0">✨</div>
-
-      {/* Main Content */}
-      <div className="relative z-10 min-h-screen flex items-center justify-center p-4 py-8">
+    <div 
+      className="
+        min-h-screen 
+        bg-gradient-to-br from-[#fdfaf4] to-[#f8fafc] 
+        pt-16 sm:pt-20 md:pt-24 lg:pt-28 
+        px-4 pb-10 sm:pb-12
+      "
+    >
+      <div className="mx-auto w-full max-w-5xl">
         {!submitted ? (
-          <div className="w-full max-w-5xl">
-            {/* Header Section */}
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center space-x-2 mb-4">
-                <Sparkles className="h-6 w-6" style={{ color: colors.gold }} />
-                <span className="text-sm font-semibold tracking-wider uppercase" style={{ color: colors.deepNavy }}>Bless Your Church</span>
-              </div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-3" style={{ color: colors.deepNavy }}>
-                Give with <span style={{ color: colors.gold }}>Joy</span>
+          <>
+            {/* Header – with extra top margin for breathing room */}
+            <div className="text-center mt-6 sm:mt-8 md:mt-10 lg:mt-12 mb-10 md:mb-14">
+              <h1 className="text-4xl sm:text-5xl font-bold text-[#0f1e44] tracking-tight">
+                Give <span className="text-[#e9c94a]">Joyfully</span>
               </h1>
-              <p className="text-gray-600 text-lg">Your generosity makes a difference</p>
+              <p className="mt-4 text-lg text-[#64748b]">
+                Your generosity changes lives
+              </p>
             </div>
 
-            {/* Main Card Container */}
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-              {/* Left Side - Church Details Card */}
-              <div className="lg:col-span-2">
-                <div
-                  className="rounded-3xl shadow-2xl overflow-hidden backdrop-blur-sm"
-                  style={{ 
-                    backgroundColor: colors.offWhite,
-                    border: `1px solid ${colors.gold}20`
-                  }}
-                >
-                  {/* Card Header */}
-                  <div 
-                    className="p-6 text-center relative overflow-hidden"
-                    style={{ backgroundColor: colors.deepNavy }}
-                  >
-                    <div className="absolute top-0 right-0 w-20 h-20 rounded-full opacity-10" style={{ backgroundColor: colors.gold }}></div>
-                    <Building className="h-8 w-8 mx-auto mb-3" style={{ color: colors.gold }} />
-                    <h2 className="text-xl font-bold" style={{ color: colors.gold }}>Church Account</h2>
-                  </div>
-
-                  {/* Card Body */}
-                  <div className="p-6 space-y-6">
-                    {/* Bank Info */}
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: colors.deepNavy + '80' }}>Bank</p>
-                      <p className="text-2xl font-bold" style={{ color: colors.deepNavy }}>
-                        {churchAccount.bank}
-                      </p>
-                    </div>
-
-                    {/* Account Name */}
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: colors.deepNavy + '80' }}>Account Name</p>
-                      <div className="p-4 rounded-2xl" style={{ backgroundColor: colors.lightBlue }}>
-                        <p className="font-semibold text-sm" style={{ color: colors.deepNavy }}>
-                          {churchAccount.accountName}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Account Number - Enhanced */}
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: colors.deepNavy + '80' }}>Account Number</p>
-                      <div 
-                        className="p-5 rounded-2xl flex items-center justify-between group cursor-pointer transition-all hover:shadow-lg"
-                        style={{ 
-                          backgroundColor: colors.gold + '15',
-                          border: `2px solid ${colors.gold}40`
-                        }}
-                        onClick={copyToClipboard}
-                      >
-                        <span className="text-3xl font-mono font-bold tracking-widest" style={{ color: colors.deepNavy }}>
-                          {churchAccount.accountNumber}
-                        </span>
-                        <div 
-                          className="p-3 rounded-xl transition-all group-hover:scale-110"
-                          style={{ 
-                            backgroundColor: copied ? colors.gold : colors.offWhite,
-                            border: `2px solid ${colors.gold}`
-                          }}
-                        >
-                          {copied ? (
-                            <Check className="h-5 w-5" style={{ color: colors.deepNavy }} />
-                          ) : (
-                            <Copy className="h-5 w-5" style={{ color: colors.deepNavy }} />
-                          )}
-                        </div>
-                      </div>
-                      <p className="text-xs text-center mt-2" style={{ color: colors.deepNavy + '80' }}>
-                        {copied ? "✓ Copied!" : "Click to copy"}
-                      </p>
-                    </div>
-
-                    {/* Reference Note */}
-                    <div 
-                      className="p-4 rounded-2xl border-l-4"
-                      style={{ 
-                        backgroundColor: colors.softCream,
-                        borderLeftColor: colors.gold
-                      }}
-                    >
-                      <p className="text-sm font-medium" style={{ color: colors.deepNavy }}>
-                        💡 <strong>Tip:</strong> Use your name as reference
-                      </p>
-                    </div>
-
-                    {/* Help Section */}
-                    <div className="pt-4 border-t border-gray-200">
-                      <p className="text-xs text-center mb-2" style={{ color: colors.deepNavy + '80' }}>Need help?</p>
-                      <div className="flex items-center justify-center space-x-2">
-                        <Smartphone className="h-4 w-4" style={{ color: colors.gold }} />
-                        <a 
-                          href="tel:+2349059156800"
-                          className="font-semibold hover:underline"
-                          style={{ color: colors.deepNavy }}
-                        >
-                          +234 905 915 6800
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Info Box */}
-                <div 
-                  className="mt-6 p-4 rounded-2xl text-center"
-                  style={{ 
-                    backgroundColor: colors.lightBlue,
-                    border: `2px solid ${colors.gold}40`
-                  }}
-                >
-                  <p className="text-sm font-medium" style={{ color: colors.deepNavy }}>
-                    🔒 Your information is secure and confidential
-                  </p>
-                </div>
-              </div>
-
-              {/* Right Side - Form Card */}
-              <div className="lg:col-span-3">
-                <div
-                  className="rounded-3xl shadow-2xl p-8 backdrop-blur-sm"
-                  style={{ 
-                    backgroundColor: colors.offWhite,
-                    border: `1px solid ${colors.gold}20`
-                  }}
-                >
-                  <h2 className="text-2xl font-bold mb-8" style={{ color: colors.deepNavy }}>
-                    Confirm Your Gift
+            <div className="grid lg:grid-cols-5 gap-7 lg:gap-8">
+              {/* Form – comes first on mobile */}
+              <div className="lg:col-span-3 order-1 lg:order-2">
+                <div className="bg-white rounded-3xl shadow-xl border border-[#e9c94a]/10 p-7 md:p-9">
+                  <h2 className="text-2xl font-bold text-[#0f1e44] mb-8">
+                    Confirm Your Giving
                   </h2>
-                  
+
                   <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Amount Input */}
+                    {/* Amount */}
                     <div>
-                      <label className="block text-sm font-semibold mb-3" style={{ color: colors.deepNavy }}>
-                        💰 Gift Amount (₦)
+                      <label className="block text-sm font-semibold text-[#0f1e44] mb-2">
+                        Amount (₦)
                       </label>
                       <div className="relative">
                         <input
                           type="number"
                           value={amount}
                           onChange={(e) => setAmount(e.target.value)}
-                          onFocus={() => setFocusedField('amount')}
-                          onBlur={() => setFocusedField(null)}
-                          placeholder="Enter amount"
+                          onFocus={() => setFocused("amount")}
+                          onBlur={() => setFocused(null)}
+                          placeholder="0"
                           required
-                          className="w-full px-6 py-4 text-lg font-semibold rounded-2xl outline-none transition-all"
-                          style={{ 
-                            backgroundColor: colors.softCream,
-                            color: colors.deepNavy,
-                            border: focusedField === 'amount' ? `3px solid ${colors.gold}` : `2px solid ${colors.gold}20`
-                          }}
+                          className={`w-full px-5 py-4 rounded-2xl bg-[#fdfaf4] border-2 text-lg font-medium transition-all
+                            ${focused === "amount"
+                              ? "border-[#e9c94a] shadow-sm shadow-[#e9c94a]/30"
+                              : "border-gray-200 hover:border-gray-300"}`}
                         />
                         {amount && (
-                          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold" style={{ color: colors.gold }}>
-                            ₦{parseFloat(amount).toLocaleString()}
+                          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#e9c94a] font-semibold">
+                            ₦{Number(amount).toLocaleString()}
                           </span>
                         )}
                       </div>
                     </div>
 
-                    {/* Category and Date Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* Category */}
+                    {/* Category + Date */}
+                    <div className="grid md:grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-sm font-semibold mb-3" style={{ color: colors.deepNavy }}>
-                          📂 Category
+                        <label className="block text-sm font-semibold text-[#0f1e44] mb-2">
+                          Category
                         </label>
                         <select
                           value={category}
                           onChange={(e) => setCategory(e.target.value)}
-                          onFocus={() => setFocusedField('category')}
-                          onBlur={() => setFocusedField(null)}
-                          className="w-full px-6 py-4 rounded-2xl outline-none transition-all appearance-none cursor-pointer font-medium"
-                          style={{ 
-                            backgroundColor: colors.softCream,
-                            color: colors.deepNavy,
-                            border: focusedField === 'category' ? `3px solid ${colors.gold}` : `2px solid ${colors.gold}20`,
-                            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%230B1B3F' d='M1 1l5 5 5-5'/%3E%3C/svg%3E")`,
-                            backgroundRepeat: 'no-repeat',
-                            backgroundPosition: 'right 1rem center',
-                            paddingRight: '2.5rem'
+                          onFocus={() => setFocused("cat")}
+                          onBlur={() => setFocused(null)}
+                          className={`w-full px-5 py-4 rounded-2xl bg-[#fdfaf4] border-2 font-medium appearance-none cursor-pointer
+                            ${focused === "cat" ? "border-[#e9c94a] shadow-sm shadow-[#e9c94a]/30" : "border-gray-200 hover:border-gray-300"}`}
+                          style={{
+                            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath fill='%230f1e44' d='M1 1l5 5 5-5'/%3E%3C/svg%3E")`,
+                            backgroundPosition: "right 1.2rem center",
+                            backgroundRepeat: "no-repeat",
+                            paddingRight: "2.8rem",
                           }}
                         >
-                          {categories.map(cat => (
-                            <option key={cat} value={cat}>{cat}</option>
+                          {categories.map((c) => (
+                            <option key={c} value={c}>{c}</option>
                           ))}
                         </select>
                       </div>
-                      
-                      {/* Date */}
+
                       <div>
-                        <label className="block text-sm font-semibold mb-3" style={{ color: colors.deepNavy }}>
-                          📅 Date
+                        <label className="block text-sm font-semibold text-[#0f1e44] mb-2">
+                          Date of Payment
                         </label>
                         <input
                           type="date"
-                          value={paymentDate}
-                          onChange={(e) => setPaymentDate(e.target.value)}
-                          onFocus={() => setFocusedField('date')}
-                          onBlur={() => setFocusedField(null)}
+                          value={date}
+                          onChange={(e) => setDate(e.target.value)}
+                          onFocus={() => setFocused("date")}
+                          onBlur={() => setFocused(null)}
                           required
-                          className="w-full px-6 py-4 rounded-2xl outline-none transition-all font-medium"
-                          style={{ 
-                            backgroundColor: colors.softCream,
-                            color: colors.deepNavy,
-                            border: focusedField === 'date' ? `3px solid ${colors.gold}` : `2px solid ${colors.gold}20`
-                          }}
+                          className={`w-full px-5 py-4 rounded-2xl bg-[#fdfaf4] border-2 font-medium
+                            ${focused === "date" ? "border-[#e9c94a] shadow-sm shadow-[#e9c94a]/30" : "border-gray-200 hover:border-gray-300"}`}
                         />
                       </div>
                     </div>
 
                     {/* Reference */}
                     <div>
-                      <label className="block text-sm font-semibold mb-3" style={{ color: colors.deepNavy }}>
-                        📝 Reference (Optional)
+                      <label className="block text-sm font-semibold text-[#0f1e44] mb-2">
+                        Reference (optional)
                       </label>
                       <input
                         type="text"
                         value={reference}
                         onChange={(e) => setReference(e.target.value)}
-                        onFocus={() => setFocusedField('reference')}
-                        onBlur={() => setFocusedField(null)}
-                        placeholder="Transaction ID or your name"
-                        className="w-full px-6 py-4 rounded-2xl outline-none transition-all"
-                        style={{ 
-                          backgroundColor: colors.softCream,
-                          color: colors.deepNavy,
-                          border: focusedField === 'reference' ? `3px solid ${colors.gold}` : `2px solid ${colors.gold}20`
-                        }}
+                        placeholder="Your name or transaction ID"
+                        className="w-full px-5 py-4 rounded-2xl bg-[#fdfaf4] border-2 border-gray-200 hover:border-gray-300 focus:border-[#e9c94a] focus:shadow-sm focus:shadow-[#e9c94a]/30 transition-all"
                       />
                     </div>
 
-                    {/* File Upload */}
+                    {/* Upload */}
                     <div>
-                      <label className="block text-sm font-semibold mb-3" style={{ color: colors.deepNavy }}>
-                        📸 Upload Receipt
+                      <label className="block text-sm font-semibold text-[#0f1e44] mb-2">
+                        Upload Payment Proof
                       </label>
-                      <div 
-                        className={`border-2 border-dashed rounded-2xl p-8 text-center transition-all cursor-pointer ${file ? 'border-solid' : 'border-dashed'}`}
-                        style={{ 
-                          borderColor: file ? colors.gold : colors.gold + '40',
-                          backgroundColor: file ? colors.gold + '10' : colors.softCream
-                        }}
+                      <label
+                        htmlFor="receipt-upload"
+                        className={`block p-8 border-2 border-dashed rounded-2xl text-center cursor-pointer transition-all
+                          ${file ? "border-[#e9c94a] bg-[#e9c94a]/5" : "border-gray-300 hover:border-[#e9c94a]/60 bg-white"}`}
                       >
                         <input
+                          id="receipt-upload"
                           type="file"
                           accept="image/*,.pdf"
-                          onChange={handleFileChange}
+                          onChange={handleFile}
                           className="hidden"
-                          id="receipt"
                           required
                         />
-                        <label htmlFor="receipt" className="cursor-pointer block">
-                          <div className="flex justify-center mb-3">
-                            <div 
-                              className="p-4 rounded-full"
-                              style={{ backgroundColor: colors.gold + '20' }}
-                            >
-                              <Upload className="h-8 w-8" style={{ color: file ? colors.gold : colors.deepNavy }} />
-                            </div>
-                          </div>
-                          <p className="text-sm font-semibold" style={{ color: colors.deepNavy }}>
-                            {file ? '✓ ' + file.name : 'Click to upload receipt'}
-                          </p>
-                          <p className="text-xs mt-2" style={{ color: colors.deepNavy + '80' }}>
-                            JPG, PNG or PDF (Max 5MB)
-                          </p>
-                        </label>
-                      </div>
+                        <div className="mx-auto w-14 h-14 rounded-full bg-[#e9c94a]/10 flex items-center justify-center mb-4">
+                          <Upload className="h-7 w-7 text-[#e9c94a]" />
+                        </div>
+                        <p className="font-medium text-[#0f1e44]">
+                          {file ? file.name : "Click or drag receipt here"}
+                        </p>
+                        <p className="text-sm text-[#64748b] mt-1">
+                          JPG, PNG, PDF • max 5 MB
+                        </p>
+                      </label>
                     </div>
 
-                    {/* Submit Button */}
+                    {/* Submit */}
                     <button
                       type="submit"
-                      disabled={loading || !amount || !paymentDate || !file}
-                      className="w-full font-bold py-4 px-6 rounded-2xl transition-all flex items-center justify-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed text-lg group hover:shadow-xl active:scale-95"
-                      style={{ 
-                        backgroundColor: colors.gold,
-                        color: colors.deepNavy
-                      }}
+                      disabled={loading || !amount || !date || !file}
+                      className="w-full py-4 px-6 rounded-2xl font-semibold text-lg flex items-center justify-center gap-2.5 transition-all
+                        bg-[#e9c94a] text-[#0f1e44] hover:bg-[#d9b53a] disabled:opacity-50 disabled:cursor-not-allowed
+                        shadow-md hover:shadow-lg active:scale-[0.98]"
                     >
                       {loading ? (
                         <>
-                          <div className="animate-spin rounded-full h-5 w-5 border-2 border-current border-t-transparent"></div>
-                          <span>Processing...</span>
+                          <div className="h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                          <span>Processing…</span>
                         </>
                       ) : (
                         <>
-                          <Send className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                          <span>Submit Confirmation</span>
-                          <ArrowRight className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          <Send className="h-5 w-5" />
+                          <span>Confirm Gift</span>
                         </>
                       )}
                     </button>
                   </form>
                 </div>
               </div>
+
+              {/* Bank Details – comes second on mobile */}
+              <div className="lg:col-span-2 order-2 lg:order-1">
+                <div className="bg-white rounded-3xl shadow-xl border border-[#e9c94a]/10 overflow-hidden">
+                  <div className="bg-[#0f1e44] px-7 py-6 text-center">
+                    <Building className="h-8 w-8 text-[#e9c94a] mx-auto mb-3" />
+                    <h3 className="text-xl font-bold text-[#e9c94a]">
+                      Church Bank Details
+                    </h3>
+                  </div>
+
+                  <div className="p-7 space-y-6">
+                    <div>
+                      <div className="text-xs font-semibold uppercase tracking-wide text-[#64748b] mb-1">
+                        Bank
+                      </div>
+                      <div className="text-2xl font-bold text-[#0f1e44]">
+                        {church.bank}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="text-xs font-semibold uppercase tracking-wide text-[#64748b] mb-1">
+                        Account Name
+                      </div>
+                      <div className="p-4 bg-[#fdfaf4] rounded-2xl text-[#0f1e44] font-medium">
+                        {church.name}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="text-xs font-semibold uppercase tracking-wide text-[#64748b] mb-1">
+                        Account Number
+                      </div>
+                      <button
+                        onClick={copyAccount}
+                        className="w-full p-5 bg-[#e9c94a]/5 rounded-2xl flex items-center justify-between group hover:bg-[#e9c94a]/10 transition-all border-2 border-[#e9c94a]/20"
+                      >
+                        <span className="text-2xl md:text-3xl font-mono font-bold tracking-wide text-[#0f1e44]">
+                          {church.number}
+                        </span>
+                        <div className={`p-3 rounded-xl ${copied ? "bg-[#e9c94a]" : "bg-white"} border-2 border-[#e9c94a]`}>
+                          {copied ? (
+                            <Check className="h-5 w-5 text-[#0f1e44]" />
+                          ) : (
+                            <Copy className="h-5 w-5 text-[#0f1e44]" />
+                          )}
+                        </div>
+                      </button>
+                      <p className="text-center text-xs mt-2 text-[#64748b]">
+                        {copied ? "✓ Copied!" : "Tap to copy"}
+                      </p>
+                    </div>
+
+                    <div className="pt-4 border-t border-gray-100 text-center">
+                      <p className="text-sm text-[#0f1e44] font-medium">
+                        Use your full name as reference
+                      </p>
+                    </div>
+
+                    <div className="pt-4 border-t border-gray-100 flex items-center justify-center gap-2 text-sm">
+                      <Phone className="h-4 w-4 text-[#e9c94a]" />
+                      <a href="tel:+2349059156800" className="font-medium text-[#0f1e44] hover:underline">
+                        +234 905 915 6800
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 p-5 bg-[#e9c94a]/5 rounded-2xl text-center text-sm font-medium text-[#0f1e44]">
+                  🔒 Secure & confidential
+                </div>
+              </div>
             </div>
-          </div>
+          </>
         ) : (
-          /* Success Card - Enhanced */
-          <div className="w-full max-w-md">
-            <div
-              className="rounded-3xl shadow-2xl p-12 text-center backdrop-blur-sm relative overflow-hidden"
-              style={{ 
-                backgroundColor: colors.offWhite,
-                border: `2px solid ${colors.gold}`
-              }}
-            >
-              {/* Success Background Animation */}
-              <div className="absolute top-0 right-0 w-40 h-40 rounded-full opacity-5" style={{ backgroundColor: colors.gold }}></div>
-              <div className="absolute bottom-0 left-0 w-40 h-40 rounded-full opacity-5" style={{ backgroundColor: colors.deepNavy }}></div>
+          /* Success Screen */
+          <div className="max-w-lg mx-auto">
+            <div className="bg-white rounded-3xl shadow-2xl p-10 md:p-12 text-center border border-[#e9c94a]/20">
+              <div className="w-24 h-24 mx-auto mb-8 rounded-full bg-gradient-to-br from-[#e9c94a]/20 to-[#fdfaf4] flex items-center justify-center">
+                <Heart className="h-14 w-14 text-[#e9c94a] fill-[#e9c94a]/90" />
+              </div>
 
-              <div className="relative z-10">
-                {/* Heart Icon */}
-                <div className="inline-block p-6 rounded-full mb-6 animate-bounce" style={{ backgroundColor: colors.gold + '20' }}>
-                  <Heart className="h-16 w-16" style={{ color: colors.gold }} fill={colors.gold} />
-                </div>
+              <h2 className="text-4xl font-bold text-[#0f1e44] mb-4">
+                Thank You!
+              </h2>
 
-                {/* Success Message */}
-                <h2 className="text-3xl font-bold mb-3" style={{ color: colors.deepNavy }}>
-                  Thank You!
-                </h2>
-                <p className="text-lg mb-2" style={{ color: colors.deepNavy }}>
-                  Your gift of
-                </p>
-                <p className="text-4xl font-bold mb-4" style={{ color: colors.gold }}>
-                  ₦{parseFloat(amount).toLocaleString()}
-                </p>
+              <p className="text-xl text-[#64748b] mb-3">
+                Your gift of
+              </p>
+              <p className="text-5xl font-bold text-[#e9c94a] mb-8">
+                ₦{Number(amount).toLocaleString()}
+              </p>
 
-                {/* Details */}
-                <div className="bg-gray-50 rounded-2xl p-4 mb-6" style={{ backgroundColor: colors.softCream }}>
-                  <p className="text-sm font-semibold mb-2" style={{ color: colors.deepNavy }}>
-                    Category: <span style={{ color: colors.gold }}>{category}</span>
-                  </p>
-                  <p className="text-xs" style={{ color: colors.deepNavy + '80' }}>
-                    We'll verify your receipt shortly and send you a confirmation.
-                  </p>
-                </div>
+              <div className="inline-block px-6 py-3 mb-8 rounded-full bg-[#e9c94a]/10 text-[#e9c94a] font-semibold">
+                {category}
+              </div>
 
-                {/* Description */}
-                <p className="text-sm mb-8" style={{ color: colors.deepNavy + '80' }}>
-                  ✨ Your generosity makes a real difference in our community.
-                </p>
+              <p className="text-[#64748b] leading-relaxed mb-10">
+                We’ll verify your receipt shortly and send a confirmation.<br />
+                Your kindness is making a real difference.
+              </p>
 
-                {/* Buttons */}
-                <div className="space-y-3">
-                  <button
-                    onClick={() => {
-                      setSubmitted(false);
-                      setAmount("");
-                      setFile(null);
-                      setCategory("Tithe");
-                      setReference("");
-                      setPaymentDate("");
-                    }}
-                    className="w-full px-8 py-3 rounded-2xl font-bold transition-all hover:shadow-lg active:scale-95"
-                    style={{ 
-                      backgroundColor: colors.gold,
-                      color: colors.deepNavy
-                    }}
-                  >
-                    Make Another Gift
-                  </button>
-                  <button
-                    onClick={() => window.location.href = "/"}
-                    className="w-full px-8 py-3 rounded-2xl font-bold transition-all hover:shadow-lg active:scale-95"
-                    style={{ 
-                      backgroundColor: colors.deepNavy + '20',
-                      color: colors.deepNavy,
-                      border: `2px solid ${colors.deepNavy}`
-                    }}
-                  >
-                    Back to Home
-                  </button>
-                </div>
+              <div className="grid gap-4">
+                <button
+                  onClick={reset}
+                  className="w-full py-4 px-6 rounded-2xl font-semibold text-lg bg-[#e9c94a] text-[#0f1e44] hover:bg-[#d9b53a] shadow-md hover:shadow-lg transition-all"
+                >
+                  Give Again
+                </button>
+                <button
+                  onClick={() => window.location.href = "/"}
+                  className="w-full py-4 px-6 rounded-2xl font-semibold text-lg border-2 border-[#0f1e44]/30 text-[#0f1e44] hover:bg-[#0f1e44]/5 transition-all"
+                >
+                  Back to Home
+                </button>
               </div>
             </div>
           </div>

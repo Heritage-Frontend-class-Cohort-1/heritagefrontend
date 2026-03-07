@@ -31,10 +31,12 @@ const AdminAuth = () => {
 
     try {
       const url = isSignup
-        ? "http://localhost:5000/api/users/signup"
-        : "http://localhost:5000/api/users/signin";
+        ? "https://backend-heritage-6.onrender.com/api/users/signup"
+        : "https://backend-heritage-6.onrender.com/api/users/signin";
 
-      const bodyData = isSignup ? { ...formData, role: "admin" } : { email: formData.email, password: formData.password };
+      const bodyData = isSignup
+        ? { ...formData, role: "admin" }
+        : { email: formData.email, password: formData.password };
 
       const response = await fetch(url, {
         method: "POST",
@@ -43,16 +45,25 @@ const AdminAuth = () => {
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "Action failed");
 
-      // Save token & user info
+      if (!response.ok) {
+        if (data.errors && Array.isArray(data.errors)) {
+          setError(data.errors.map(err => err.msg).join(", "));
+        } else if (data.message) {
+          setError(data.message);
+        } else {
+          setError("Something went wrong. Please try again.");
+        }
+        return;
+      }
+
       localStorage.setItem("adminToken", data.token);
       localStorage.setItem("adminName", data.user.name);
       localStorage.setItem("adminEmail", data.user.email);
 
       navigate("/admin/dashboard");
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Failed to connect to the server");
     } finally {
       setIsSubmitting(false);
     }
@@ -103,12 +114,20 @@ const AdminAuth = () => {
             required
             className="w-full px-5 py-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 transition"
           />
+
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-gold text-deepNavy py-4 rounded-lg font-semibold hover:bg-goldHover transition duration-300 disabled:opacity-70"
-            style={{ backgroundColor: colors.gold, color: colors.deepNavy }}
+            className="w-full flex items-center justify-center gap-3 py-4 rounded-lg font-semibold transition duration-300"
+            style={{
+              backgroundColor: colors.gold,
+              color: colors.deepNavy,
+              opacity: isSubmitting ? 0.7 : 1,
+            }}
           >
+            {isSubmitting && (
+              <span className="loader border-t-2 border-b-2 border-deepNavy w-5 h-5 rounded-full animate-spin"></span>
+            )}
             {isSubmitting
               ? isSignup
                 ? "Signing up..."
@@ -128,6 +147,14 @@ const AdminAuth = () => {
             {isSignup ? "Login" : "Sign Up"}
           </span>
         </p>
+
+        {/* Spinner CSS */}
+        <style>{`
+          .loader {
+            border-left-color: transparent;
+            border-right-color: transparent;
+          }
+        `}</style>
       </form>
     </div>
   );

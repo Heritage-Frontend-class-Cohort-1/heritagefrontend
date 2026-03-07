@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { colors } from "../../utils/colors";
 
-const API_URL = import.meta.env.VITE_API_URL || "https://backend-heritage-1.onrender.com";
+const API_URL = import.meta.env.VITE_API_URL || "https://backend-heritage-6.onrender.com";
 
 console.log("🔍 API_URL:", API_URL);
 
