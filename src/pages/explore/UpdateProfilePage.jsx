@@ -1,19 +1,17 @@
 import { useState } from "react";
+import axios from "axios";
 import { 
-  Camera, User, Mail, Phone, MapPin, Calendar, 
-  Users, Save, ArrowLeft, Loader2, CheckCircle2 
+  Camera, User, Save, ArrowLeft, Loader2, CheckCircle2 
 } from "lucide-react";
-// Import the API service
-import { memberService } from "../../utils/api";
 
 const colors = {
   deepNavy: "#0B1B3F",
-  secondaryNavy: "#142A5A",
   softCream: "#FFF4E1",
   gold: "#FFD700",
   offWhite: "#F8F8F8",
-  lightBlue: "#E8F0F8",
 };
+
+const API_URL = import.meta.env.VITE_API_URL || "https://backend-heritage-10.onrender.com";
 
 const UpdateProfilePage = () => {
   const [step, setStep] = useState("verify");
@@ -33,56 +31,74 @@ const UpdateProfilePage = () => {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [updateSuccess, setUpdateSuccess] = useState(false);
-  const [message, setMessage] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
+  // ===== VERIFY PHONE =====
   const handleVerifyPhone = async (e) => {
     e.preventDefault();
     setVerifyError("");
+    setErrorMsg("");
     setLoading(true);
+
     try {
-      // Logic handled by API service
-      const member = await API.memberService.getByPhone(phone);
-      
-      if (!member) {
+      const normalizedPhone = phone.trim().replace(/\s+/g, "");
+      const response = await axios.get(`${API_URL}/api/members/phone/${encodeURIComponent(normalizedPhone)}`);
+      const member = response.data.data || response.data;
+
+      if (!member?._id) {
         setVerifyError("No member found with this phone number.");
-      } else {
-        setSelectedMember(member);
-        setFormData({
-          firstName: member.firstName || "",
-          lastName: member.lastName || "",
-          email: member.email || "",
-          phone: member.phone || "",
-          address: member.address || "",
-          birthDay: member.birthDay || "",
-          birthMonth: member.birthMonth || "",
-          category: member.category || "Member",
-        });
-        setImagePreview(member.profileImage || member.image || member.imageUrl || null);
-        setStep("edit");
+        return;
       }
+
+      setSelectedMember(member);
+      setFormData({
+        firstName: member.firstName || "",
+        lastName: member.lastName || "",
+        email: member.email || "",
+        phone: member.phone || normalizedPhone,
+        address: member.address || "",
+        birthDay: member.birthDay || "",
+        birthMonth: member.birthMonth || "",
+        category: member.category || "Member",
+      });
+      setImagePreview(member.image || member.imageUrl || null);
+      setStep("edit");
     } catch (error) {
-      setVerifyError("Search failed. Please check the phone number.");
+      console.error("Verify error:", error);
+      setVerifyError("Search failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
+  // ===== UPDATE PROFILE =====
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMsg("");
     setLoading(true);
-    setMessage("");
-    try {
-      // Logic handled by API service
-      await memberService.updateMember(selectedMember._id, formData, imageFile);
 
-      setUpdateSuccess(true);
+    try {
+      const data = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        data.append(key, value || "");
+      });
+      if (imageFile) data.append("image", imageFile);
+
+      await axios.put(`${API_URL}/api/members/${selectedMember._id}`, data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      setSuccess(true);
       setTimeout(() => {
-        setUpdateSuccess(false);
+        setSuccess(false);
         handleBack();
-      }, 2500);
-    } catch (err) {
-      setMessage("Failed to update profile. Please try again.");
+      }, 2200);
+    } catch (error) {
+      console.error("Update failed:", error);
+      const msg = error.response?.data?.message || "Failed to update profile. Please try again.";
+      setErrorMsg(msg);
+    } finally {
       setLoading(false);
     }
   };
@@ -91,149 +107,173 @@ const UpdateProfilePage = () => {
     setStep("verify");
     setPhone("");
     setSelectedMember(null);
-    setUpdateSuccess(false);
+    setSuccess(false);
     setLoading(false);
     setImageFile(null);
-    setMessage("");
+    setImagePreview(null);
+    setErrorMsg("");
   };
 
   return (
-    <div className="min-h-screen relative" style={{ backgroundColor: colors.offWhite }}>
-      
-      {/* --- LOADING & SUCCESS OVERLAY --- */}
-      {(loading || updateSuccess) && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-white p-8 rounded-2xl shadow-2xl text-center flex flex-col items-center">
-            {updateSuccess ? (
+    <div className="min-h-screen relative" style={{ backgroundColor: colors.softCream }}>
+
+      {/* Success / Loading Overlay */}
+      {(loading || success) && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl p-10 shadow-2xl text-center min-w-[320px] max-w-sm w-full">
+            {success ? (
               <>
-                <CheckCircle2 size={80} className="text-green-500 animate-bounce" />
-                <h2 className="text-2xl font-bold mt-4" style={{ color: colors.deepNavy }}>Success!</h2>
-                <p className="text-gray-600">Profile updated successfully.</p>
+                <CheckCircle2 size={80} className="text-green-500 mx-auto mb-5 animate-bounce" />
+                <h2 className="text-3xl font-bold mb-2" style={{ color: colors.deepNavy }}>
+                  Success!
+                </h2>
+                <p className="text-gray-600">Profile updated successfully</p>
               </>
             ) : (
               <>
-                <Loader2 size={80} className="text-blue-600 animate-spin" />
-                <h2 className="text-2xl font-bold mt-4" style={{ color: colors.deepNavy }}>Updating...</h2>
-                <p className="text-gray-600">Please wait while we save your changes.</p>
+                <Loader2 size={80} className="text-blue-600 animate-spin mx-auto mb-5" />
+                <h2 className="text-2xl font-bold" style={{ color: colors.deepNavy }}>
+                  Updating...
+                </h2>
+                <p className="text-gray-600 mt-2">Please wait a moment</p>
               </>
             )}
           </div>
         </div>
       )}
 
-      {/* --- STEP 1: VERIFY --- */}
+      {/* STEP 1: VERIFY */}
       {step === "verify" ? (
-        <>
-          <section className="py-20 text-white text-center" style={{ backgroundColor: colors.deepNavy }}>
-            <h1 className="text-4xl font-bold">Update Profile</h1>
-          </section>
-          <div className="max-w-md mx-auto p-8 -mt-10 bg-white rounded-2xl shadow-xl">
-            <form onSubmit={handleVerifyPhone} className="space-y-4">
-              <label className="block font-semibold">Registered Phone Number</label>
-              <input 
-                type="tel" 
-                value={phone} 
-                onChange={(e) => setPhone(e.target.value)}
-                className="w-full p-4 border-2 rounded-xl focus:outline-none focus:border-blue-400"
-                placeholder="+234..."
-                required
-              />
-              {verifyError && <p className="text-red-500 text-sm font-medium">{verifyError}</p>}
-              <button className="w-full py-4 text-white font-bold rounded-xl transition hover:opacity-90" style={{ backgroundColor: colors.deepNavy }}>
-                Find My Profile
-              </button>
-            </form>
-          </div>
-        </>
-      ) : (
-        /* --- STEP 2: EDIT FORM --- */
-        <>
-          <section className="py-12 text-white text-center" style={{ backgroundColor: colors.deepNavy }}>
-            <button onClick={handleBack} className="mb-4 flex items-center mx-auto opacity-80 hover:opacity-100">
-              <ArrowLeft size={18} className="mr-2" /> Back
+        <div className="max-w-md mx-auto mt-20 p-8 bg-white rounded-3xl shadow-xl">
+          <h1 className="text-3xl font-bold text-center mb-8" style={{ color: colors.deepNavy }}>
+            Update Profile
+          </h1>
+          <form onSubmit={handleVerifyPhone} className="space-y-5">
+            <input
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="080XXXXXXXX"
+              className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent"
+              required
+            />
+            {verifyError && <p className="text-red-600 text-sm font-medium">{verifyError}</p>}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-4 font-bold text-white rounded-xl transition disabled:opacity-60 flex items-center justify-center gap-2"
+              style={{ backgroundColor: colors.deepNavy }}
+            >
+              {loading ? (
+                <>
+                  <Loader2 size={20} className="animate-spin" />
+                  Searching...
+                </>
+              ) : (
+                "Find My Profile"
+              )}
             </button>
-            <h1 className="text-3xl font-bold">Edit Details</h1>
-          </section>
+          </form>
+        </div>
+      ) : (
+        /* STEP 2: EDIT FORM */
+        <div className="max-w-3xl mx-auto mt-12 mb-16 px-4 sm:px-6">
+          <button
+            onClick={handleBack}
+            className="flex items-center mb-6 text-gold hover:text-yellow-600 font-medium transition"
+          >
+            <ArrowLeft size={18} className="mr-2" /> Back
+          </button>
 
-          <div className="max-w-3xl mx-auto px-4 -mt-8 mb-12">
-            <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-2xl p-6 md:p-10 space-y-6">
-              
-              {message && <div className="p-4 bg-red-50 text-red-700 rounded-lg border-l-4 border-red-500">{message}</div>}
+          <form onSubmit={handleSubmit} className="bg-white p-8 md:p-10 rounded-3xl shadow-xl space-y-7">
+            {errorMsg && (
+              <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl">
+                {errorMsg}
+              </div>
+            )}
 
-              {/* Profile Image */}
-              <div className="flex flex-col items-center">
-                <div className="relative group">
-                  <div className="w-32 h-32 rounded-full overflow-hidden border-4 shadow-md" style={{ borderColor: colors.gold }}>
-                    {imagePreview ? (
-                      <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gray-100"><User size={48} className="text-gray-400" /></div>
-                    )}
+            {/* Profile Picture */}
+            <div className="flex justify-center mb-6">
+              <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-gold shadow-lg">
+                {imagePreview ? (
+                  <img src={imagePreview} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                    <User size={56} className="text-gray-400" />
                   </div>
-                  <label className="absolute bottom-0 right-0 p-2 bg-white rounded-full shadow-lg cursor-pointer hover:scale-110 transition">
-                    <Camera size={20} style={{ color: colors.deepNavy }} />
-                    <input type="file" className="hidden" onChange={(e) => {
-                      if (e.target.files[0]) {
-                        setImageFile(e.target.files[0]);
+                )}
+                <label className="absolute bottom-2 right-2 bg-white p-3 rounded-full shadow cursor-pointer hover:bg-gray-50 transition">
+                  <Camera size={22} className="text-gray-700" />
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setImageFile(file);
                         const reader = new FileReader();
                         reader.onloadend = () => setImagePreview(reader.result);
-                        reader.readAsDataURL(e.target.files[0]);
+                        reader.readAsDataURL(file);
                       }
-                    }} accept="image/*" />
-                  </label>
-                </div>
+                    }}
+                  />
+                </label>
               </div>
+            </div>
 
-              {/* Input Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="flex items-center text-sm font-bold mb-1"><User size={14} className="mr-2"/> First Name</label>
-                  <input name="firstName" value={formData.firstName} onChange={(e) => setFormData({...formData, firstName: e.target.value})} className="w-full p-3 border rounded-lg" required />
-                </div>
-                <div>
-                  <label className="flex items-center text-sm font-bold mb-1"><User size={14} className="mr-2"/> Last Name</label>
-                  <input name="lastName" value={formData.lastName} onChange={(e) => setFormData({...formData, lastName: e.target.value})} className="w-full p-3 border rounded-lg" required />
-                </div>
-                <div>
-                  <label className="flex items-center text-sm font-bold mb-1"><Mail size={14} className="mr-2"/> Email</label>
-                  <input name="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full p-3 border rounded-lg" />
-                </div>
-                <div>
-                  <label className="flex items-center text-sm font-bold mb-1"><Phone size={14} className="mr-2"/> Phone</label>
-                  <input name="phone" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full p-3 border rounded-lg" required />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="flex items-center text-sm font-bold mb-1"><MapPin size={14} className="mr-2"/> Address</label>
-                  <textarea name="address" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} className="w-full p-3 border rounded-lg" rows="2" required />
-                </div>
-                <div>
-                  <label className="flex items-center text-sm font-bold mb-1"><Calendar size={14} className="mr-2"/> Birth Day</label>
-                  <select value={formData.birthDay} onChange={(e) => setFormData({...formData, birthDay: e.target.value})} className="w-full p-3 border rounded-lg">
-                    {[...Array(31)].map((_, i) => <option key={i+1} value={i+1}>{i+1}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="flex items-center text-sm font-bold mb-1"><Calendar size={14} className="mr-2"/> Birth Month</label>
-                  <select value={formData.birthMonth} onChange={(e) => setFormData({...formData, birthMonth: e.target.value})} className="w-full p-3 border rounded-lg">
-                    {["January","February","March","April","May","June","July","August","September","October","November","December"].map((m, i) => <option key={m} value={i+1}>{m}</option>)}
-                  </select>
-                </div>
-                <div className="md:col-span-2">
-                  <label className="flex items-center text-sm font-bold mb-1"><Users size={14} className="mr-2"/> Category</label>
-                  <select value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})} className="w-full p-3 border rounded-lg">
-                    <option value="Member">Member</option>
-                    <option value="First Timer">First Timer</option>
-                    <option value="New Convert">New Convert</option>
-                  </select>
-                </div>
-              </div>
+            {/* Form Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <input placeholder="First Name *" value={formData.firstName} onChange={e => setFormData({...formData, firstName: e.target.value})} className="p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent" required />
+              <input placeholder="Last Name *" value={formData.lastName} onChange={e => setFormData({...formData, lastName: e.target.value})} className="p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent" required />
+              <input type="email" placeholder="Email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent" />
+              <input type="tel" placeholder="Phone *" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent" required />
+              <textarea placeholder="Address" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent md:col-span-2" rows={3} />
+              <select value={formData.birthDay} onChange={e => setFormData({...formData, birthDay: e.target.value})} className="p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent">
+                <option value="">Day</option>
+                {[...Array(31)].map((_, i) => <option key={i+1} value={i+1}>{i+1}</option>)}
+              </select>
+              <select value={formData.birthMonth} onChange={e => setFormData({...formData, birthMonth: e.target.value})} className="p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent">
+                <option value="">Month</option>
+                {["January","February","March","April","May","June","July","August","September","October","November","December"].map((m,i) => (
+                  <option key={i+1} value={i+1}>{m}</option>
+                ))}
+              </select>
+              <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent md:col-span-2">
+                <option value="Member">Member</option>
+                <option value="First Timer">First Timer</option>
+                <option value="New Convert">New Convert</option>
+              </select>
+            </div>
 
-              <button type="submit" className="w-full py-4 rounded-xl font-bold text-white shadow-lg flex items-center justify-center gap-2 hover:brightness-110 transition" style={{ backgroundColor: colors.deepNavy }}>
-                <Save size={20} /> Update Profile
-              </button>
-            </form>
-          </div>
-        </>
+            {/* === UPDATE BUTTON === */}
+            <button
+              type="submit"
+              disabled={loading}
+              className={`
+                w-full py-4 mt-6 rounded-xl font-bold text-lg flex items-center justify-center gap-3 transition-all
+                ${loading 
+                  ? "bg-gray-400 cursor-not-allowed" 
+                  : "bg-deepNavy hover:brightness-110 active:brightness-90"
+                }
+                text-white shadow-md
+              `}
+              style={{ backgroundColor: loading ? undefined : colors.deepNavy }}
+            >
+              {loading ? (
+                <>
+                  <Loader2 size={24} className="animate-spin" />
+                  Updating...
+                </>
+              ) : (
+                <>
+                  <Save size={22} />
+                  Update Profile
+                </>
+              )}
+            </button>
+          </form>
+        </div>
       )}
     </div>
   );
