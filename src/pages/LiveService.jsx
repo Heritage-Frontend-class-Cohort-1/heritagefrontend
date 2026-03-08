@@ -27,9 +27,9 @@ const LiveService = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-linear-to-b from-gray-50 to-white">
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-br from-blue-950 via-indigo-950 to-blue-900 text-white">
+      <div className="relative bg-linear-to-br from-blue-950 via-indigo-950 to-blue-900 text-white">
         <div className="absolute inset-0 bg-black/30" />
         <div className="relative max-w-7xl mx-auto px-5 py-20 md:py-28 text-center">
           <div className="inline-flex items-center gap-3 mb-6 px-5 py-2 bg-white/10 backdrop-blur-md rounded-full">

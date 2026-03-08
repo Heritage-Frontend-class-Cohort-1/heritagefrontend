@@ -111,7 +111,7 @@ const Home = () => {
           />
         ))}
 
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/90" />
+        <div className="absolute inset-0 bg-linear-to-b from-black/60 via-transparent to-black/90" />
 
         <div className={`relative text-center text-white px-4 md:px-6 z-10 w-full max-w-5xl transition-all duration-1000 ${showContent ? "translate-y-0 opacity-100" : "translate-y-12 opacity-0"}`}>
           <h1 className="text-3xl sm:text-4xl md:text-7xl font-serif font-bold mb-4 md:mb-6 drop-shadow-2xl leading-tight">
@@ -149,10 +149,11 @@ const Home = () => {
 
       {/* YEAR IMAGE */}
       <section className="py-12 text-center bg-white">
-        <div className="max-w-4xl mx-auto px-4">
-            <img src={year2026} alt="Year 2026" className="rounded-2xl shadow-2xl mx-auto" />
-        </div>
-      </section>
+  {/* Changed max-w-4xl to max-w-6xl or max-w-full */}
+  <div className="max-w-6xl mx-auto px-4">
+    <img src={year2026} alt="Year 2026" className="rounded-2xl shadow-2xl mx-auto w-full" />
+  </div>
+</section>
 
       {/* QUICK LINKS */}
       <section className="py-20 bg-[#142A5A]">

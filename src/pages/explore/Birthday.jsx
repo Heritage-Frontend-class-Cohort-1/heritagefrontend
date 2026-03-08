@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import { birthdayService } from "../../utils/api";
 
 const Birthday = () => {
   const [birthdays, setBirthdays] = useState([]);
@@ -16,20 +16,22 @@ const Birthday = () => {
 
   const fetchBirthdays = async () => {
     try {
-      const res = await fetch("https://backend-heritage-1.onrender.com/api/birthdays/upcoming");
-      if (!res.ok) throw new Error("Failed to fetch birthdays");
-      const data = await res.json();
+      const data = await birthdayService.getUpcomingBirthdays();
 
       const birthdaysWithMessage = data.data.map((bday) => {
         const randomIndex = Math.floor(Math.random() * birthdayMessages.length);
         const message = birthdayMessages[randomIndex].replace("{name}", bday.memberName);
 
-        // Construct a safe date string for display
         let displayDate = "Birthday not available";
+
         if (bday.birthDay && bday.birthMonth) {
           const date = new Date();
           date.setMonth(bday.birthMonth - 1, bday.birthDay);
-          displayDate = date.toLocaleDateString("en-US", { month: "long", day: "numeric" });
+
+          displayDate = date.toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+          });
         }
 
         return { ...bday, message, displayDate };
@@ -67,10 +69,16 @@ const Birthday = () => {
                 alt={bday.memberName}
                 className="w-32 h-32 object-cover rounded-full mx-auto mb-4"
               />
+
               <h3 className="text-xl font-semibold">{bday.memberName}</h3>
+
               <p className="text-gray-600">{bday.displayDate}</p>
+
               <p className="mt-2 text-green-600 font-medium">{bday.message}</p>
-              <p className="text-gray-500">{bday.daysLeft === 0 ? "Today" : `${bday.daysLeft} day(s) left`}</p>
+
+              <p className="text-gray-500">
+                {bday.daysLeft === 0 ? "Today" : `${bday.daysLeft} day(s) left`}
+              </p>
             </div>
           ))}
         </div>

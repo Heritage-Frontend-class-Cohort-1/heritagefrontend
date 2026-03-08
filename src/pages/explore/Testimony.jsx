@@ -9,7 +9,7 @@ const colors = {
   offWhite: "#F8F8F8",
 };
 
-const BASE_URL = "https://backend-heritage-6.onrender.com";
+const BASE_URL = "https://backend-heritage-10.onrender.com";
 
 const Testimony = () => {
   const [testimonies, setTestimonies] = useState([]);

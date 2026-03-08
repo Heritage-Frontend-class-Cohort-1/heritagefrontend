@@ -1,6 +1,10 @@
 import { useState } from "react";
-import axios from "axios";
-import { Camera, User, Mail, Phone, MapPin, Calendar, Users, Save, ArrowLeft, Loader2, CheckCircle2 } from "lucide-react";
+import { 
+  Camera, User, Mail, Phone, MapPin, Calendar, 
+  Users, Save, ArrowLeft, Loader2, CheckCircle2 
+} from "lucide-react";
+// Import the API service
+import { memberService } from "../../utils/api";
 
 const colors = {
   deepNavy: "#0B1B3F",
@@ -29,19 +33,16 @@ const UpdateProfilePage = () => {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [updateSuccess, setUpdateSuccess] = useState(false); // New state for success mark
+  const [updateSuccess, setUpdateSuccess] = useState(false);
   const [message, setMessage] = useState("");
-
-  const API_URL = import.meta.env.VITE_API_URL || "https://backend-heritage-6.onrender.com";
 
   const handleVerifyPhone = async (e) => {
     e.preventDefault();
     setVerifyError("");
     setLoading(true);
     try {
-      const response = await axios.get(`${API_URL}/api/members/phone/${encodeURIComponent(phone.trim())}`);
-      const result = response.data.data || response.data;
-      const member = Array.isArray(result) ? result[0] : result;
+      // Logic handled by API service
+      const member = await API.memberService.getByPhone(phone);
       
       if (!member) {
         setVerifyError("No member found with this phone number.");
@@ -72,13 +73,10 @@ const UpdateProfilePage = () => {
     setLoading(true);
     setMessage("");
     try {
-      const data = new FormData();
-      Object.keys(formData).forEach(key => data.append(key, formData[key]));
-      if (imageFile) data.append("image", imageFile);
+      // Logic handled by API service
+      await memberService.updateMember(selectedMember._id, formData, imageFile);
 
-      await axios.put(`${API_URL}/api/members/${selectedMember._id}`, data);
-
-      setUpdateSuccess(true); // Show success mark
+      setUpdateSuccess(true);
       setTimeout(() => {
         setUpdateSuccess(false);
         handleBack();
@@ -95,6 +93,8 @@ const UpdateProfilePage = () => {
     setSelectedMember(null);
     setUpdateSuccess(false);
     setLoading(false);
+    setImageFile(null);
+    setMessage("");
   };
 
   return (
@@ -134,7 +134,7 @@ const UpdateProfilePage = () => {
                 type="tel" 
                 value={phone} 
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full p-4 border-2 rounded-xl"
+                className="w-full p-4 border-2 rounded-xl focus:outline-none focus:border-blue-400"
                 placeholder="+234..."
                 required
               />
@@ -163,7 +163,7 @@ const UpdateProfilePage = () => {
               {/* Profile Image */}
               <div className="flex flex-col items-center">
                 <div className="relative group">
-                  <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gold-500 shadow-md" style={{ borderColor: colors.gold }}>
+                  <div className="w-32 h-32 rounded-full overflow-hidden border-4 shadow-md" style={{ borderColor: colors.gold }}>
                     {imagePreview ? (
                       <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
                     ) : (
@@ -228,7 +228,7 @@ const UpdateProfilePage = () => {
                 </div>
               </div>
 
-              <button type="submit" className="w-full py-4 rounded-xl font-bold text-white shadow-lg flex items-center justify-center gap-2 hover:brightness-110" style={{ backgroundColor: colors.deepNavy }}>
+              <button type="submit" className="w-full py-4 rounded-xl font-bold text-white shadow-lg flex items-center justify-center gap-2 hover:brightness-110 transition" style={{ backgroundColor: colors.deepNavy }}>
                 <Save size={20} /> Update Profile
               </button>
             </form>
