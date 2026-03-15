@@ -96,11 +96,11 @@ const Footer = () => {
               </li>
               <li>
                 <span className="block font-medium text-white"> Bible Study</span>
-                 Tuesday 6:00 PM
+                 Tuesday 5:00 PM
               </li>
               <li>
                 <span className="block font-medium text-white">Faith Clinic </span>
-                Thursday at 6:00 PM
+                Thursday at 5:00 PM
               </li>
             </ul>
           </div>

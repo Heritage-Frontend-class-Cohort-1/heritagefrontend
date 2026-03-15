@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-// Added imports for icons
 import { Loader2, CheckCircle2 } from "lucide-react";
 
 const colors = {
@@ -12,10 +11,9 @@ const colors = {
   offWhite: "#F8F8F8",
 };
 
-const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
 const MemberForm = ({ memberId, existingData }) => {
   const API_URL = import.meta.env.VITE_API_URL || "https://backend-heritage-10.onrender.com";
+  const fileInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
     firstName: existingData?.firstName || "",
@@ -29,7 +27,7 @@ const MemberForm = ({ memberId, existingData }) => {
   });
   const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [showSuccessMark, setShowSuccessMark] = useState(false); // New state for the checkmark
+  const [showSuccessMark, setShowSuccessMark] = useState(false);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
 
@@ -52,6 +50,7 @@ const MemberForm = ({ memberId, existingData }) => {
     try {
       setLoading(true);
       setMessage("");
+
       const data = new FormData();
       Object.keys(formData).forEach((key) => {
         if (formData[key] !== "") data.append(key, formData[key]);
@@ -59,23 +58,17 @@ const MemberForm = ({ memberId, existingData }) => {
       if (imageFile) data.append("image", imageFile);
 
       if (memberId) {
-        await axios.put(`${API_URL}/api/members/${memberId}`, data, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        await axios.put(`${API_URL}/api/members/${memberId}`, data);
         setMessage("Profile updated successfully!");
-        setMessageType("success");
       } else {
-        await axios.post(`${API_URL}/api/members`, data, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        await axios.post(`${API_URL}/api/members`, data);
         setMessage("Member added successfully!");
-        setMessageType("success");
       }
 
-      // Success sequence
+      setMessageType("success");
       setLoading(false);
       setShowSuccessMark(true);
-      
+
       setTimeout(() => {
         setShowSuccessMark(false);
         if (!memberId) {
@@ -90,6 +83,7 @@ const MemberForm = ({ memberId, existingData }) => {
             category: "Member",
           });
           setImageFile(null);
+          if (fileInputRef.current) fileInputRef.current.value = "";
         }
         setMessage("");
       }, 2500);
@@ -104,8 +98,8 @@ const MemberForm = ({ memberId, existingData }) => {
 
   return (
     <div className="relative p-4 rounded-xl shadow-md" style={{ backgroundColor: colors.softCream }}>
-      
-      {/* --- LOADING & SUCCESS OVERLAY --- */}
+
+      {/* LOADING & SUCCESS OVERLAY */}
       {(loading || showSuccessMark) && (
         <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-white/80 backdrop-blur-[2px]">
           <div className="text-center">
@@ -130,8 +124,8 @@ const MemberForm = ({ memberId, existingData }) => {
         <h3 className="text-xl font-bold" style={{ color: colors.deepNavy }}>
           {memberId ? "Edit Profile" : "Add Member"}
         </h3>
-        <Link 
-          to="/explore-heritage/update-profile" 
+        <Link
+          to="/explore-heritage/update-profile"
           className="text-sm px-3 py-1 rounded-lg font-semibold hover:opacity-80 transition"
           style={{ backgroundColor: colors.deepNavy, color: colors.gold }}
         >
@@ -140,7 +134,7 @@ const MemberForm = ({ memberId, existingData }) => {
       </div>
 
       {message && (
-        <p 
+        <p
           className="mb-4 p-2 rounded-lg text-sm font-medium"
           style={{
             color: messageType === "success" ? "#1b5e20" : "#b71c1c",
@@ -153,38 +147,95 @@ const MemberForm = ({ memberId, existingData }) => {
       )}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-        <input name="firstName" placeholder="First Name" value={formData.firstName} onChange={handleChange} required className="p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 outline-none" />
-        <input name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleChange} required className="p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 outline-none" />
-        <input name="email" placeholder="Email (Optional)" value={formData.email} onChange={handleChange} className="p-2 rounded-lg border border-gray-300" />
-        <input name="phone" placeholder="Phone" value={formData.phone} onChange={handleChange} required className="p-2 rounded-lg border border-gray-300" />
-        <input name="address" placeholder="Address" value={formData.address} onChange={handleChange} required className="p-2 rounded-lg border border-gray-300" />
+        <input
+          name="firstName"
+          placeholder="First Name"
+          value={formData.firstName}
+          onChange={handleChange}
+          required
+          className="p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 outline-none"
+        />
+        <input
+          name="lastName"
+          placeholder="Last Name"
+          value={formData.lastName}
+          onChange={handleChange}
+          required
+          className="p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 outline-none"
+        />
+        <input
+          name="email"
+          placeholder="Email (Optional)"
+          value={formData.email}
+          onChange={handleChange}
+          className="p-2 rounded-lg border border-gray-300"
+        />
+        <input
+          name="phone"
+          placeholder="Phone"
+          value={formData.phone}
+          onChange={handleChange}
+          required
+          className="p-2 rounded-lg border border-gray-300"
+        />
+        <input
+          name="address"
+          placeholder="Address"
+          value={formData.address}
+          onChange={handleChange}
+          required
+          className="p-2 rounded-lg border border-gray-300"
+        />
 
         <div className="grid grid-cols-2 gap-2">
-            <select name="birthDay" value={formData.birthDay} onChange={handleChange} className="p-2 rounded-lg border border-gray-300">
+          <select
+            name="birthDay"
+            value={formData.birthDay}
+            onChange={handleChange}
+            className="p-2 rounded-lg border border-gray-300"
+          >
             <option value="">Day (Optional)</option>
-            {[...Array(31)].map((_, i) => <option key={i+1} value={i+1}>{i+1}</option>)}
-            </select>
-
-            <select name="birthMonth" value={formData.birthMonth} onChange={handleChange} className="p-2 rounded-lg border border-gray-300">
-            <option value="">Month (Optional)</option>
-            {["January","February","March","April","May","June","July","August","September","October","November","December"].map((m,i) => (
-                <option key={i+1} value={i+1}>{m}</option>
+            {[...Array(31)].map((_, i) => (
+              <option key={i + 1} value={i + 1}>{i + 1}</option>
             ))}
-            </select>
+          </select>
+
+          <select
+            name="birthMonth"
+            value={formData.birthMonth}
+            onChange={handleChange}
+            className="p-2 rounded-lg border border-gray-300"
+          >
+            <option value="">Month (Optional)</option>
+            {["January","February","March","April","May","June","July","August","September","October","November","December"].map((m, i) => (
+              <option key={i + 1} value={i + 1}>{m}</option>
+            ))}
+          </select>
         </div>
 
-        <select name="category" value={formData.category} onChange={handleChange} className="p-2 rounded-lg border border-gray-300">
+        <select
+          name="category"
+          value={formData.category}
+          onChange={handleChange}
+          className="p-2 rounded-lg border border-gray-300"
+        >
           <option value="Member">Member</option>
           <option value="First Timer">First Timer</option>
           <option value="New Convert">New Convert</option>
         </select>
 
         <label className="text-xs font-bold text-gray-600 ml-1">Profile Photo</label>
-        <input type="file" accept="image/*" onChange={handleImageChange} className="p-2 rounded-lg border border-gray-300 bg-white text-sm" />
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          className="p-2 rounded-lg border border-gray-300 bg-white text-sm"
+        />
 
-        <button 
-          type="submit" 
-          disabled={loading || showSuccessMark} 
+        <button
+          type="submit"
+          disabled={loading || showSuccessMark}
           className="p-3 mt-2 rounded-lg font-bold hover:opacity-90 transition disabled:opacity-50 shadow-sm"
           style={{ backgroundColor: colors.deepNavy, color: colors.gold }}
         >

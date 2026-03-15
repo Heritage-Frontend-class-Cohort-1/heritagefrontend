@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import axios from "axios";
 import { 
   Camera, User, Save, ArrowLeft, Loader2, CheckCircle2 
@@ -62,7 +62,7 @@ const UpdateProfilePage = () => {
         birthMonth: member.birthMonth || "",
         category: member.category || "Member",
       });
-      setImagePreview(member.image || member.imageUrl || null);
+      setImagePreview(member.imageUrl || member.image || null);
       setStep("edit");
     } catch (error) {
       console.error("Verify error:", error);
@@ -85,9 +85,8 @@ const UpdateProfilePage = () => {
       });
       if (imageFile) data.append("image", imageFile);
 
-      await axios.put(`${API_URL}/api/members/${selectedMember._id}`, data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      // ✅ No headers option — axios sets Content-Type + boundary automatically
+      await axios.put(`${API_URL}/api/members/${selectedMember._id}`, data);
 
       setSuccess(true);
       setTimeout(() => {
@@ -180,7 +179,8 @@ const UpdateProfilePage = () => {
         <div className="max-w-3xl mx-auto mt-12 mb-16 px-4 sm:px-6">
           <button
             onClick={handleBack}
-            className="flex items-center mb-6 text-gold hover:text-yellow-600 font-medium transition"
+            className="flex items-center mb-6 font-medium transition"
+            style={{ color: colors.gold }}
           >
             <ArrowLeft size={18} className="mr-2" /> Back
           </button>
@@ -194,7 +194,10 @@ const UpdateProfilePage = () => {
 
             {/* Profile Picture */}
             <div className="flex justify-center mb-6">
-              <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-gold shadow-lg">
+              <div
+                className="relative w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden shadow-lg"
+                style={{ border: `4px solid ${colors.gold}` }}
+              >
                 {imagePreview ? (
                   <img src={imagePreview} alt="Profile" className="w-full h-full object-cover" />
                 ) : (
@@ -224,41 +227,79 @@ const UpdateProfilePage = () => {
 
             {/* Form Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <input placeholder="First Name *" value={formData.firstName} onChange={e => setFormData({...formData, firstName: e.target.value})} className="p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent" required />
-              <input placeholder="Last Name *" value={formData.lastName} onChange={e => setFormData({...formData, lastName: e.target.value})} className="p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent" required />
-              <input type="email" placeholder="Email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent" />
-              <input type="tel" placeholder="Phone *" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent" required />
-              <textarea placeholder="Address" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent md:col-span-2" rows={3} />
-              <select value={formData.birthDay} onChange={e => setFormData({...formData, birthDay: e.target.value})} className="p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent">
+              <input
+                placeholder="First Name *"
+                value={formData.firstName}
+                onChange={e => setFormData({...formData, firstName: e.target.value})}
+                className="p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:outline-none"
+                required
+              />
+              <input
+                placeholder="Last Name *"
+                value={formData.lastName}
+                onChange={e => setFormData({...formData, lastName: e.target.value})}
+                className="p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:outline-none"
+                required
+              />
+              <input
+                type="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={e => setFormData({...formData, email: e.target.value})}
+                className="p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:outline-none"
+              />
+              <input
+                type="tel"
+                placeholder="Phone *"
+                value={formData.phone}
+                onChange={e => setFormData({...formData, phone: e.target.value})}
+                className="p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:outline-none"
+                required
+              />
+              <textarea
+                placeholder="Address"
+                value={formData.address}
+                onChange={e => setFormData({...formData, address: e.target.value})}
+                className="p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:outline-none md:col-span-2"
+                rows={3}
+              />
+              <select
+                value={formData.birthDay}
+                onChange={e => setFormData({...formData, birthDay: e.target.value})}
+                className="p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:outline-none"
+              >
                 <option value="">Day</option>
-                {[...Array(31)].map((_, i) => <option key={i+1} value={i+1}>{i+1}</option>)}
+                {[...Array(31)].map((_, i) => (
+                  <option key={i+1} value={i+1}>{i+1}</option>
+                ))}
               </select>
-              <select value={formData.birthMonth} onChange={e => setFormData({...formData, birthMonth: e.target.value})} className="p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent">
+              <select
+                value={formData.birthMonth}
+                onChange={e => setFormData({...formData, birthMonth: e.target.value})}
+                className="p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:outline-none"
+              >
                 <option value="">Month</option>
-                {["January","February","March","April","May","June","July","August","September","October","November","December"].map((m,i) => (
+                {["January","February","March","April","May","June","July","August","September","October","November","December"].map((m, i) => (
                   <option key={i+1} value={i+1}>{m}</option>
                 ))}
               </select>
-              <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent md:col-span-2">
+              <select
+                value={formData.category}
+                onChange={e => setFormData({...formData, category: e.target.value})}
+                className="p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:outline-none md:col-span-2"
+              >
                 <option value="Member">Member</option>
                 <option value="First Timer">First Timer</option>
                 <option value="New Convert">New Convert</option>
               </select>
             </div>
 
-            {/* === UPDATE BUTTON === */}
+            {/* UPDATE BUTTON */}
             <button
               type="submit"
               disabled={loading}
-              className={`
-                w-full py-4 mt-6 rounded-xl font-bold text-lg flex items-center justify-center gap-3 transition-all
-                ${loading 
-                  ? "bg-gray-400 cursor-not-allowed" 
-                  : "bg-deepNavy hover:brightness-110 active:brightness-90"
-                }
-                text-white shadow-md
-              `}
-              style={{ backgroundColor: loading ? undefined : colors.deepNavy }}
+              className="w-full py-4 mt-6 rounded-xl font-bold text-lg flex items-center justify-center gap-3 transition-all text-white shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
+              style={{ backgroundColor: colors.deepNavy }}
             >
               {loading ? (
                 <>
