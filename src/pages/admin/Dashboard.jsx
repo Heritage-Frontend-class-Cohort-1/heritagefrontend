@@ -685,20 +685,49 @@ const AdminDashboard = () => {
   };
 
   const submitAttendance = async () => {
-    const presentMembers = Object.keys(attendance).filter(id => attendance[id]);
-    const absentMembers  = members.filter(m => !attendance[m._id]).map(m => ({ name: `${m.firstName} ${m.lastName}`, phone: m.phone }));
-    if (presentMembers.length === 0) { alert("Please mark at least one member as present"); return; }
-    if (!attendanceMessage.trim()) { alert("Please enter a message for absentees"); return; }
-    setSubmittingAttendance(true);
-    try {
-      await axios.post(`${API_URL}/api/attendance/mark`, { presentMembers, absentMembers, message: attendanceMessage, serviceType, serviceDate });
-      setToast(`✅ Attendance saved! ${presentMembers.length} present, ${absentMembers.length} absent.`);
-      setAttendance({});
-    } catch (err) {
-      alert(err.response?.data?.error || err.response?.data?.message || "Failed to record attendance.");
-    } finally { setSubmittingAttendance(false); }
-  };
+  const presentMembers = Object.keys(attendance).filter(id => attendance[id]);
+  const absentMembers = members
+    .filter(m => !attendance[m._id])
+    .map(m => ({
+      memberId: m._id,
+      name: `${m.firstName} ${m.lastName}`,
+      phone: m.phone || null,
+    }));
 
+  if (presentMembers.length === 0) {
+    alert("Please mark at least one member as present");
+    return;
+  }
+  if (!attendanceMessage.trim()) {
+    alert("Please enter a message for absentees");
+    return;
+  }
+
+  setSubmittingAttendance(true);
+  try {
+    const payload = { presentMembers, absentMembers, message: attendanceMessage, serviceType, serviceDate };
+    console.log("📤 Payload:", JSON.stringify(payload, null, 2));
+
+    const res = await axios.post(`${API_URL}/api/attendance/mark`, payload);
+    console.log("✅ Success:", res.data);
+
+    setToast(`✅ Attendance saved! ${presentMembers.length} present, ${absentMembers.length} absent.`);
+    setAttendance({});
+  } catch (err) {
+    // Show the FULL backend error
+    const errData = err.response?.data;
+    const errStatus = err.response?.status;
+    const errMsg = errData?.error || errData?.message || errData || err.message;
+    
+    console.error("❌ Status:", errStatus);
+    console.error("❌ Full error data:", errData);
+    
+    // Show detailed error in alert so you can see it without DevTools
+    alert(`Error ${errStatus}:\n${typeof errMsg === "object" ? JSON.stringify(errMsg, null, 2) : errMsg}`);
+  } finally {
+    setSubmittingAttendance(false);
+  }
+};
   const sendFollowUp = async (member) => {
     const id   = member._id;
     const name = member.firstName ? `${member.firstName} ${member.lastName}` : member.memberName;
