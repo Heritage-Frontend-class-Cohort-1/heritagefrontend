@@ -16,9 +16,6 @@ const MONTHS = ["January","February","March","April","May","June","July","August
 const MONTHS_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const SERVICE_TYPES = ["Sunday Service","Tuesday Service","Thursday Service","Special Service"];
 
-// ─────────────────────────────────────────
-// ERROR 1 FIXED: These were outside the component — moved here as module-level constants
-// ─────────────────────────────────────────
 const daysSince = (date) => {
   if (!date) return null;
   const diff = Date.now() - new Date(date).getTime();
@@ -42,9 +39,6 @@ const PIPELINE_STEPS = [
   { key: "returned",     label: "Returned" },
 ];
 
-// ─────────────────────────────────────────
-// ERROR 2 FIXED: btnStyle was defined inside JSX — moved here as a proper function
-// ─────────────────────────────────────────
 const btnStyle = (bg, color) => ({
   width: "100%", padding: "9px 0", borderRadius: 9,
   fontWeight: 700, fontSize: 13, border: "none",
@@ -52,9 +46,6 @@ const btnStyle = (bg, color) => ({
   transition: "opacity 0.15s",
 });
 
-/* ─────────────────────────────────────────
-   REUSABLE COMPONENTS
-───────────────────────────────────────── */
 const Spinner = ({ size = 18, color = "#fff" }) => (
   <>
     <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
@@ -76,11 +67,7 @@ const StatCard = ({ label, value, icon, accent }) => (
     display: "flex", alignItems: "center", gap: 16,
     border: accent ? "none" : "1.5px solid #e8eaf0", minWidth: 0,
   }}>
-    <div style={{
-      fontSize: 26, background: accent ? "rgba(255,215,0,0.15)" : colors.soft,
-      borderRadius: 12, width: 50, height: 50,
-      display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-    }}>{icon}</div>
+    <div style={{ fontSize: 26, background: accent ? "rgba(255,215,0,0.15)" : colors.soft, borderRadius: 12, width: 50, height: 50, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{icon}</div>
     <div>
       <div style={{ fontSize: 11, opacity: 0.7, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase" }}>{label}</div>
       <div style={{ fontSize: 30, fontWeight: 800, lineHeight: 1.1, fontFamily: "'Georgia', serif" }}>{value}</div>
@@ -92,9 +79,7 @@ const SectionHeader = ({ title, count, subtitle }) => (
   <div style={{ marginBottom: 20 }}>
     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
       <h2 style={{ fontSize: 22, fontWeight: 800, color: colors.deepNavy, fontFamily: "'Georgia', serif", margin: 0 }}>{title}</h2>
-      {count !== undefined && (
-        <span style={{ background: colors.gold, color: colors.deepNavy, fontWeight: 800, fontSize: 13, borderRadius: 20, padding: "2px 12px" }}>{count}</span>
-      )}
+      {count !== undefined && <span style={{ background: colors.gold, color: colors.deepNavy, fontWeight: 800, fontSize: 13, borderRadius: 20, padding: "2px 12px" }}>{count}</span>}
     </div>
     {subtitle && <p style={{ color: "#64748b", fontSize: 13, margin: "4px 0 0" }}>{subtitle}</p>}
   </div>
@@ -103,14 +88,8 @@ const SectionHeader = ({ title, count, subtitle }) => (
 const SearchInput = ({ value, onChange, placeholder }) => (
   <div style={{ position: "relative", marginBottom: 20 }}>
     <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", fontSize: 15 }}>🔍</span>
-    <input
-      value={value} onChange={e => onChange(e.target.value)}
-      placeholder={placeholder || "Search…"}
-      style={{
-        width: "100%", padding: "11px 14px 11px 40px",
-        border: "1.5px solid #e2e8f0", borderRadius: 10, fontSize: 14,
-        outline: "none", background: colors.soft, color: colors.deepNavy, boxSizing: "border-box",
-      }}
+    <input value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder || "Search…"}
+      style={{ width: "100%", padding: "11px 14px 11px 40px", border: "1.5px solid #e2e8f0", borderRadius: 10, fontSize: 14, outline: "none", background: colors.soft, color: colors.deepNavy, boxSizing: "border-box" }}
       onFocus={e => e.target.style.borderColor = colors.deepNavy}
       onBlur={e => e.target.style.borderColor = "#e2e8f0"}
     />
@@ -120,12 +99,7 @@ const SearchInput = ({ value, onChange, placeholder }) => (
 const MemberAvatar = ({ member, size = 44 }) => (
   member?.imageUrl
     ? <img src={member.imageUrl} alt="" style={{ width: size, height: size, borderRadius: "50%", objectFit: "cover", border: `2px solid ${colors.gold}`, flexShrink: 0 }} />
-    : <div style={{
-        width: size, height: size, borderRadius: "50%",
-        background: colors.deepNavy, color: colors.gold,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        fontWeight: 800, fontSize: size * 0.35, flexShrink: 0,
-      }}>
+    : <div style={{ width: size, height: size, borderRadius: "50%", background: colors.deepNavy, color: colors.gold, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: size * 0.35, flexShrink: 0 }}>
         {member?.firstName?.[0]}{member?.lastName?.[0]}
       </div>
 );
@@ -145,7 +119,7 @@ const CategoryBadge = ({ category }) => {
   );
 };
 
-const MemberCard = ({ member, onSendSMS, sending }) => (
+const MemberCard = ({ member, onSendSMS, sending, onDelete, deleting }) => (
   <div
     style={{ background: "#fff", borderRadius: 14, padding: "16px 18px", border: "1.5px solid #e8eaf0", boxShadow: "0 2px 8px rgba(11,27,63,0.05)", display: "flex", flexDirection: "column", gap: 10, transition: "box-shadow 0.2s, transform 0.2s" }}
     onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 6px 24px rgba(11,27,63,0.13)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
@@ -154,37 +128,27 @@ const MemberCard = ({ member, onSendSMS, sending }) => (
     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
       <MemberAvatar member={member} />
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontWeight: 700, fontSize: 15, color: colors.deepNavy, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-          {member.firstName} {member.lastName}
-        </div>
-        <div style={{ fontSize: 12, color: "#64748b", marginTop: 2 }}>
-          {member.phone || <span style={{ color: "#ef4444" }}>⚠ No phone</span>}
-        </div>
+        <div style={{ fontWeight: 700, fontSize: 15, color: colors.deepNavy, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{member.firstName} {member.lastName}</div>
+        <div style={{ fontSize: 12, color: "#64748b", marginTop: 2 }}>{member.phone || <span style={{ color: "#ef4444" }}>⚠ No phone</span>}</div>
       </div>
       <CategoryBadge category={member.category} />
     </div>
-    <button
-      disabled={!member.phone || sending}
-      onClick={() => onSendSMS(member)}
-      style={{
-        width: "100%", padding: "8px 0", borderRadius: 9, fontWeight: 700, fontSize: 13,
-        border: "none", cursor: member.phone && !sending ? "pointer" : "not-allowed",
-        background: member.phone && !sending ? colors.deepNavy : "#e2e8f0",
-        color: member.phone && !sending ? colors.gold : "#94a3b8",
-      }}
-    >
-      {sending ? "Sending…" : "📱 Send SMS"}
-    </button>
+    <div style={{ display: "flex", gap: 8 }}>
+      <button disabled={!member.phone || sending} onClick={() => onSendSMS(member)}
+        style={{ flex: 1, padding: "8px 0", borderRadius: 9, fontWeight: 700, fontSize: 13, border: "none", cursor: member.phone && !sending ? "pointer" : "not-allowed", background: member.phone && !sending ? colors.deepNavy : "#e2e8f0", color: member.phone && !sending ? colors.gold : "#94a3b8" }}>
+        {sending ? "Sending…" : "📱 Send SMS"}
+      </button>
+      <button disabled={deleting} onClick={() => onDelete(member)}
+        style={{ padding: "8px 12px", borderRadius: 9, fontWeight: 700, fontSize: 13, border: "none", cursor: deleting ? "not-allowed" : "pointer", background: deleting ? "#e2e8f0" : "#FEF2F2", color: deleting ? "#94a3b8" : "#DC2626" }}>
+        {deleting ? "…" : "🗑"}
+      </button>
+    </div>
   </div>
 );
 
 const ProgressBar = ({ value, max, color = colors.deepNavy, height = 8 }) => (
   <div style={{ background: "#e8eaf0", borderRadius: 99, height, overflow: "hidden" }}>
-    <div style={{
-      width: `${max > 0 ? Math.round((value / max) * 100) : 0}%`,
-      background: color, height: "100%", borderRadius: 99,
-      transition: "width 0.6s ease",
-    }} />
+    <div style={{ width: `${max > 0 ? Math.round((value / max) * 100) : 0}%`, background: color, height: "100%", borderRadius: 99, transition: "width 0.6s ease" }} />
   </div>
 );
 
@@ -197,10 +161,7 @@ const LoadingScreen = () => (
   </div>
 );
 
-/* ─────────────────────────────────────────
-   FIRST TIMER CARD
-───────────────────────────────────────── */
-// ERROR 3 FIXED: FirstTimerCard was defined inside JSX render — moved here as a proper component
+/* ─── FIRST TIMER CARD ─── */
 const FirstTimerCard = ({ member, onAction, actionLoading }) => {
   const [expanded, setExpanded] = useState(false);
   const [noteText, setNoteText] = useState(member.followUpNotes || "");
@@ -208,10 +169,10 @@ const FirstTimerCard = ({ member, onAction, actionLoading }) => {
   const [smsMsg, setSmsMsg] = useState("");
   const [showSmsInput, setShowSmsInput] = useState(null);
 
-  const days      = daysSince(member.firstVisitDate || member.createdAt);
-  const stage     = STAGE_CONFIG[member.followUpStage] || STAGE_CONFIG.none;
-  const step      = stage.step;
-  const urgency   = days === null ? "#94a3b8" : days >= 14 ? "#DC2626" : days >= 7 ? "#D97706" : "#16A34A";
+  const days = daysSince(member.firstVisitDate || member.createdAt);
+  const stage = STAGE_CONFIG[member.followUpStage] || STAGE_CONFIG.none;
+  const step = stage.step;
+  const urgency = days === null ? "#94a3b8" : days >= 14 ? "#DC2626" : days >= 7 ? "#D97706" : "#16A34A";
   const isConverted = member.followUpStage === "converted";
   const isReturned  = member.returnedToChurch || member.followUpStage === "returned";
 
@@ -219,8 +180,7 @@ const FirstTimerCard = ({ member, onAction, actionLoading }) => {
     const msg = smsMsg.trim();
     if (!msg) return;
     await onAction(member._id, "sms", { stage: stageKey, message: msg, note: `${stageKey} SMS sent` });
-    setSmsMsg("");
-    setShowSmsInput(null);
+    setSmsMsg(""); setShowSmsInput(null);
   };
 
   const handleNote = async () => {
@@ -230,42 +190,37 @@ const FirstTimerCard = ({ member, onAction, actionLoading }) => {
   };
 
   return (
-    <div
-      style={{ background: "#fff", borderRadius: 16, border: `1.5px solid ${isConverted ? "#86EFAC" : isReturned ? "#93C5FD" : "#e8eaf0"}`, boxShadow: "0 2px 10px rgba(11,27,63,0.06)", overflow: "hidden", transition: "box-shadow 0.2s" }}
+    <div style={{ background: "#fff", borderRadius: 16, border: `1.5px solid ${isConverted ? "#86EFAC" : isReturned ? "#93C5FD" : "#e8eaf0"}`, boxShadow: "0 2px 10px rgba(11,27,63,0.06)", overflow: "hidden", transition: "box-shadow 0.2s" }}
       onMouseEnter={e => e.currentTarget.style.boxShadow = "0 6px 24px rgba(11,27,63,0.12)"}
-      onMouseLeave={e => e.currentTarget.style.boxShadow = "0 2px 10px rgba(11,27,63,0.06)"}
-    >
-      {/* Top: avatar + info + stage badge */}
+      onMouseLeave={e => e.currentTarget.style.boxShadow = "0 2px 10px rgba(11,27,63,0.06)"}>
+
       <div style={{ padding: "16px 18px", display: "flex", gap: 12, alignItems: "flex-start" }}>
         <div style={{ position: "relative", flexShrink: 0 }}>
           <MemberAvatar member={member} size={48} />
           {days !== null && (
-            <div style={{ position: "absolute", bottom: -4, right: -4, background: urgency, color: "#fff", fontSize: 10, fontWeight: 800, borderRadius: 99, padding: "1px 5px", border: "2px solid #fff", whiteSpace: "nowrap" }}>
-              {days}d
-            </div>
+            <div style={{ position: "absolute", bottom: -4, right: -4, background: urgency, color: "#fff", fontSize: 10, fontWeight: 800, borderRadius: 99, padding: "1px 5px", border: "2px solid #fff", whiteSpace: "nowrap" }}>{days}d</div>
           )}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontWeight: 800, fontSize: 15, color: colors.deepNavy }}>{member.firstName} {member.lastName}</div>
           <div style={{ fontSize: 12, color: "#64748b", marginTop: 2 }}>{member.phone || <span style={{ color: "#ef4444" }}>⚠ No phone</span>}</div>
           {member.firstVisitDate && (
-            <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 2 }}>
-              First visit: {new Date(member.firstVisitDate).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" })}
-            </div>
+            <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 2 }}>First visit: {new Date(member.firstVisitDate).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" })}</div>
           )}
         </div>
-        <span style={{ fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 20, background: stage.bg, color: stage.color, flexShrink: 0, alignSelf: "flex-start" }}>
-          {stage.label}
-        </span>
+        <div style={{ display: "flex", flexDirection: "column", gap: 5, alignItems: "flex-end" }}>
+          <span style={{ fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 20, background: stage.bg, color: stage.color, flexShrink: 0 }}>{stage.label}</span>
+          <button onClick={() => onAction(member._id, "delete")} disabled={actionLoading}
+            style={{ padding: "3px 8px", borderRadius: 7, border: "none", background: "#FEF2F2", color: "#DC2626", fontWeight: 700, fontSize: 11, cursor: "pointer" }}>
+            🗑 Delete
+          </button>
+        </div>
       </div>
 
-      {/* Pipeline progress */}
       <div style={{ padding: "0 18px 14px" }}>
         <div style={{ display: "flex", alignItems: "center" }}>
           {PIPELINE_STEPS.map((s, i) => {
-            const done    = step > i;
-            const current = step === i;
-            const isLast  = i === PIPELINE_STEPS.length - 1;
+            const done = step > i; const current = step === i; const isLast = i === PIPELINE_STEPS.length - 1;
             return (
               <div key={s.key} style={{ display: "flex", alignItems: "center", flex: isLast ? 0 : 1 }}>
                 <div style={{ width: 22, height: 22, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, background: done ? colors.deepNavy : current ? stage.bg : "#f1f5f9", color: done ? colors.gold : current ? stage.color : "#94a3b8", border: current ? `2px solid ${stage.color}` : "2px solid transparent", transition: "all 0.3s" }}>
@@ -278,93 +233,62 @@ const FirstTimerCard = ({ member, onAction, actionLoading }) => {
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
           {PIPELINE_STEPS.map((s, i) => (
-            <div key={s.key} style={{ fontSize: 9, fontWeight: 600, color: step >= i ? colors.deepNavy : "#94a3b8", textAlign: "center", flex: i < PIPELINE_STEPS.length - 1 ? 1 : 0 }}>
-              {s.label}
-            </div>
+            <div key={s.key} style={{ fontSize: 9, fontWeight: 600, color: step >= i ? colors.deepNavy : "#94a3b8", textAlign: "center", flex: i < PIPELINE_STEPS.length - 1 ? 1 : 0 }}>{s.label}</div>
           ))}
         </div>
       </div>
 
-      {/* Urgency banner */}
       {!isConverted && !isReturned && days !== null && (
         <div style={{ margin: "0 18px 12px", padding: "7px 12px", borderRadius: 8, background: days >= 14 ? "#FEF2F2" : days >= 7 ? "#FFFBEB" : "#F0FDF4", borderLeft: `3px solid ${urgency}`, fontSize: 12, fontWeight: 600, color: days >= 14 ? "#B91C1C" : days >= 7 ? "#92400E" : "#15803D" }}>
           {days >= 14 ? `⚠️ ${days} days since first visit — follow-up overdue!` : days >= 7 ? `⏰ ${days} days since first visit — follow-up due this week` : `✅ ${days} days since first visit — on track`}
         </div>
       )}
 
-      {/* Notes preview */}
       {member.followUpNotes && (
-        <div style={{ margin: "0 18px 12px", padding: "8px 12px", background: "#f8fafc", borderRadius: 8, fontSize: 12, color: "#475569", fontStyle: "italic" }}>
-          💬 {member.followUpNotes}
-        </div>
+        <div style={{ margin: "0 18px 12px", padding: "8px 12px", background: "#f8fafc", borderRadius: 8, fontSize: 12, color: "#475569", fontStyle: "italic" }}>💬 {member.followUpNotes}</div>
       )}
 
-      {/* Action buttons */}
       {!isConverted && (
         <div style={{ padding: "0 18px 16px", display: "flex", flexDirection: "column", gap: 8 }}>
-
           {step < 1 && member.phone && (
-            <button disabled={actionLoading} onClick={() => { setSmsMsg(`Hello ${member.firstName}, welcome to Heritage Church! We're so glad you joined us. We'd love to see you again this Sunday. God bless you! 🙏`); setShowSmsInput("welcome"); }} style={btnStyle(colors.deepNavy, colors.gold)}>
-              📱 Send Welcome SMS
-            </button>
+            <button disabled={actionLoading} onClick={() => { setSmsMsg(`Hello ${member.firstName}, welcome to Heritage Church! We're so glad you joined us. We'd love to see you again this Sunday. God bless you! 🙏`); setShowSmsInput("welcome"); }} style={btnStyle(colors.deepNavy, colors.gold)}>📱 Send Welcome SMS</button>
           )}
           {step >= 1 && step < 2 && member.phone && (
-            <button disabled={actionLoading} onClick={() => { setSmsMsg(`Hello ${member.firstName}, this is Heritage Church. We'd love to have you join us again this Sunday. You are special to us! God bless you 🙏`); setShowSmsInput("week1"); }} style={btnStyle("#2563EB", "#fff")}>
-              📱 Send Week 1 Follow-Up
-            </button>
+            <button disabled={actionLoading} onClick={() => { setSmsMsg(`Hello ${member.firstName}, this is Heritage Church. We'd love to have you join us again this Sunday. You are special to us! God bless you 🙏`); setShowSmsInput("week1"); }} style={btnStyle("#2563EB", "#fff")}>📱 Send Week 1 Follow-Up</button>
           )}
           {step >= 2 && step < 3 && member.phone && (
-            <button disabled={actionLoading} onClick={() => { setSmsMsg(`Hello ${member.firstName}, Heritage Church checking in again! We miss you and would love to see you. Please join us this Sunday 🙏`); setShowSmsInput("week2"); }} style={btnStyle("#7C3AED", "#fff")}>
-              📱 Send Week 2 Follow-Up
-            </button>
+            <button disabled={actionLoading} onClick={() => { setSmsMsg(`Hello ${member.firstName}, Heritage Church checking in again! We miss you and would love to see you. Please join us this Sunday 🙏`); setShowSmsInput("week2"); }} style={btnStyle("#7C3AED", "#fff")}>📱 Send Week 2 Follow-Up</button>
           )}
 
           {showSmsInput && (
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               <textarea value={smsMsg} onChange={e => setSmsMsg(e.target.value)} rows={3} placeholder="Edit message before sending…"
                 style={{ width: "100%", padding: "9px 11px", border: "1.5px solid #e2e8f0", borderRadius: 9, fontSize: 12, outline: "none", resize: "vertical", fontFamily: "inherit", color: colors.deepNavy, boxSizing: "border-box" }}
-                onFocus={e => e.target.style.borderColor = colors.deepNavy}
-                onBlur={e => e.target.style.borderColor = "#e2e8f0"} />
+                onFocus={e => e.target.style.borderColor = colors.deepNavy} onBlur={e => e.target.style.borderColor = "#e2e8f0"} />
               <div style={{ display: "flex", gap: 6 }}>
-                <button disabled={actionLoading} onClick={() => handleSendSMS(showSmsInput === "welcome" ? "welcome_sent" : showSmsInput === "week1" ? "week1_sent" : "week2_sent")}
-                  style={{ ...btnStyle(colors.deepNavy, colors.gold), flex: 1, padding: "8px 0", fontSize: 12 }}>
+                <button disabled={actionLoading} onClick={() => handleSendSMS(showSmsInput === "welcome" ? "welcome_sent" : showSmsInput === "week1" ? "week1_sent" : "week2_sent")} style={{ ...btnStyle(colors.deepNavy, colors.gold), flex: 1, padding: "8px 0", fontSize: 12 }}>
                   {actionLoading ? "Sending…" : "✓ Send Now"}
                 </button>
-                <button onClick={() => setShowSmsInput(null)} style={{ padding: "8px 14px", borderRadius: 8, border: "1.5px solid #e2e8f0", background: "#fff", color: "#64748b", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
-                  Cancel
-                </button>
+                <button onClick={() => setShowSmsInput(null)} style={{ padding: "8px 14px", borderRadius: 8, border: "1.5px solid #e2e8f0", background: "#fff", color: "#64748b", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>Cancel</button>
               </div>
             </div>
           )}
 
           <div style={{ display: "flex", gap: 6 }}>
-            {!isReturned && (
-              <button disabled={actionLoading} onClick={() => onAction(member._id, "returned")} style={{ ...btnStyle("#0EA5E9", "#fff"), flex: 1, fontSize: 12 }}>
-                🏠 Returned
-              </button>
-            )}
-            <button disabled={actionLoading} onClick={() => onAction(member._id, "convert")} style={{ ...btnStyle("#16A34A", "#fff"), flex: 1, fontSize: 12 }}>
-              ✝️ Convert
-            </button>
+            {!isReturned && <button disabled={actionLoading} onClick={() => onAction(member._id, "returned")} style={{ ...btnStyle("#0EA5E9", "#fff"), flex: 1, fontSize: 12 }}>🏠 Returned</button>}
+            <button disabled={actionLoading} onClick={() => onAction(member._id, "convert")} style={{ ...btnStyle("#16A34A", "#fff"), flex: 1, fontSize: 12 }}>✝️ Convert</button>
           </div>
 
           {!showNoteInput ? (
-            <button onClick={() => setShowNoteInput(true)} style={{ ...btnStyle("#fff", "#475569"), border: "1.5px solid #e2e8f0", fontSize: 12 }}>
-              📝 Add Note
-            </button>
+            <button onClick={() => setShowNoteInput(true)} style={{ ...btnStyle("#fff", "#475569"), border: "1.5px solid #e2e8f0", fontSize: 12 }}>📝 Add Note</button>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               <textarea value={noteText} onChange={e => setNoteText(e.target.value)} rows={2} placeholder="Write a note about this person…"
                 style={{ width: "100%", padding: "9px 11px", border: "1.5px solid #e2e8f0", borderRadius: 9, fontSize: 12, outline: "none", resize: "vertical", fontFamily: "inherit", boxSizing: "border-box" }}
-                onFocus={e => e.target.style.borderColor = colors.deepNavy}
-                onBlur={e => e.target.style.borderColor = "#e2e8f0"} />
+                onFocus={e => e.target.style.borderColor = colors.deepNavy} onBlur={e => e.target.style.borderColor = "#e2e8f0"} />
               <div style={{ display: "flex", gap: 6 }}>
-                <button disabled={actionLoading} onClick={handleNote} style={{ ...btnStyle(colors.deepNavy, colors.gold), flex: 1, padding: "8px 0", fontSize: 12 }}>
-                  {actionLoading ? "Saving…" : "Save Note"}
-                </button>
-                <button onClick={() => setShowNoteInput(false)} style={{ padding: "8px 14px", borderRadius: 8, border: "1.5px solid #e2e8f0", background: "#fff", color: "#64748b", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
-                  Cancel
-                </button>
+                <button disabled={actionLoading} onClick={handleNote} style={{ ...btnStyle(colors.deepNavy, colors.gold), flex: 1, padding: "8px 0", fontSize: 12 }}>{actionLoading ? "Saving…" : "Save Note"}</button>
+                <button onClick={() => setShowNoteInput(false)} style={{ padding: "8px 14px", borderRadius: 8, border: "1.5px solid #e2e8f0", background: "#fff", color: "#64748b", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>Cancel</button>
               </div>
             </div>
           )}
@@ -372,12 +296,9 @@ const FirstTimerCard = ({ member, onAction, actionLoading }) => {
       )}
 
       {isConverted && (
-        <div style={{ margin: "0 18px 16px", padding: "12px 16px", background: "#F0FDF4", border: "1.5px solid #86EFAC", borderRadius: 10, textAlign: "center", fontWeight: 700, color: "#15803D", fontSize: 13 }}>
-          🎉 Converted to New Convert!
-        </div>
+        <div style={{ margin: "0 18px 16px", padding: "12px 16px", background: "#F0FDF4", border: "1.5px solid #86EFAC", borderRadius: 10, textAlign: "center", fontWeight: 700, color: "#15803D", fontSize: 13 }}>🎉 Converted to New Convert!</div>
       )}
 
-      {/* History toggle */}
       {member.followUpHistory?.length > 0 && (
         <div style={{ borderTop: "1px solid #f1f5f9" }}>
           <button onClick={() => setExpanded(!expanded)} style={{ width: "100%", padding: "10px 18px", background: "none", border: "none", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12, fontWeight: 700, color: "#64748b" }}>
@@ -391,9 +312,7 @@ const FirstTimerCard = ({ member, onAction, actionLoading }) => {
                   <span style={{ fontSize: 14, flexShrink: 0 }}>{h.smsSent ? "📱" : "📝"}</span>
                   <div>
                     <div style={{ fontSize: 12, color: colors.deepNavy, fontWeight: 600 }}>{h.note}</div>
-                    <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 2 }}>
-                      {new Date(h.date).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" })}
-                    </div>
+                    <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 2 }}>{new Date(h.date).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" })}</div>
                   </div>
                 </div>
               ))}
@@ -405,9 +324,7 @@ const FirstTimerCard = ({ member, onAction, actionLoading }) => {
   );
 };
 
-/* ─────────────────────────────────────────
-   SESSION DETAIL MODAL
-───────────────────────────────────────── */
+/* ─── SESSION DETAIL MODAL ─── */
 const SessionModal = ({ session, onClose }) => {
   const [detail, setDetail] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -415,9 +332,7 @@ const SessionModal = ({ session, onClose }) => {
   useEffect(() => {
     const fetch = async () => {
       try {
-        const res = await axios.get(`${API_URL}/api/attendance/session`, {
-          params: { serviceDate: session.serviceDate, serviceType: session.serviceType },
-        });
+        const res = await axios.get(`${API_URL}/api/attendance/session`, { params: { serviceDate: session.serviceDate, serviceType: session.serviceType } });
         setDetail(res.data);
       } catch (e) { console.error(e); }
       finally { setLoading(false); }
@@ -437,9 +352,7 @@ const SessionModal = ({ session, onClose }) => {
           </div>
           <button onClick={onClose} style={{ background: "#f1f5f9", border: "none", borderRadius: 8, padding: "6px 12px", cursor: "pointer", fontWeight: 700, fontSize: 18, color: "#64748b" }}>✕</button>
         </div>
-        {loading ? (
-          <div style={{ display: "flex", justifyContent: "center", padding: 40 }}><Spinner size={32} color={colors.deepNavy} /></div>
-        ) : (
+        {loading ? <div style={{ display: "flex", justifyContent: "center", padding: 40 }}><Spinner size={32} color={colors.deepNavy} /></div> : (
           <>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 24 }}>
               <div style={{ background: "#F0FDF4", border: "1.5px solid #86EFAC", borderRadius: 12, padding: "14px 18px", textAlign: "center" }}>
@@ -486,9 +399,7 @@ const SessionModal = ({ session, onClose }) => {
   );
 };
 
-/* ─────────────────────────────────────────
-   ATTENDANCE HISTORY TAB
-───────────────────────────────────────── */
+/* ─── ATTENDANCE HISTORY TAB ─── */
 const AttendanceHistory = ({ totalMembers }) => {
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
@@ -527,9 +438,7 @@ const AttendanceHistory = ({ totalMembers }) => {
         <span style={{ marginLeft: "auto", fontSize: 13, color: "#94a3b8", fontWeight: 600 }}>{MONTHS[month - 1]} {year}</span>
       </div>
 
-      {loading ? (
-        <div style={{ display: "flex", justifyContent: "center", padding: 60 }}><Spinner size={40} color={colors.deepNavy} /></div>
-      ) : (
+      {loading ? <div style={{ display: "flex", justifyContent: "center", padding: 60 }}><Spinner size={40} color={colors.deepNavy} /></div> : (
         <>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 14 }}>
             <div style={{ background: colors.deepNavy, color: "#fff", borderRadius: 16, padding: "20px 24px" }}>
@@ -558,9 +467,7 @@ const AttendanceHistory = ({ totalMembers }) => {
               </div>
               <ProgressBar value={avgAttendance} max={totalMembers} color={colors.deepNavy} height={14} />
               <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8, fontSize: 12, color: "#94a3b8", fontWeight: 600 }}>
-                <span>0</span>
-                <span>Average {avgAttendance} of {totalMembers} members per service</span>
-                <span>{totalMembers}</span>
+                <span>0</span><span>Average {avgAttendance} of {totalMembers} members per service</span><span>{totalMembers}</span>
               </div>
               {sessions.length > 1 && (
                 <div style={{ marginTop: 20 }}>
@@ -643,22 +550,20 @@ const AdminDashboard = () => {
   const [prayers, setPrayers]         = useState([]);
   const [testimonies, setTestimonies] = useState([]);
   const [birthdays, setBirthdays]     = useState([]);
+  const [contacts, setContacts]       = useState([]);
   const [loading, setLoading]         = useState(true);
-  const [sendingStates, setSendingStates] = useState({});
+  const [sendingStates, setSendingStates]   = useState({});
+  const [deletingStates, setDeletingStates] = useState({});
 
   const [attendance, setAttendance]   = useState({});
   const [serviceType, setServiceType] = useState("Sunday Service");
   const [serviceDate, setServiceDate] = useState(() => new Date().toISOString().split("T")[0]);
-  const [attendanceMessage, setAttendanceMessage] = useState(
-    "Hello {name}, we missed you at church today. Please reach out if there's any issue."
-  );
+  const [attendanceMessage, setAttendanceMessage] = useState("Hello {name}, we missed you at church today. Please reach out if there's any issue.");
   const [submittingAttendance, setSubmittingAttendance] = useState(false);
 
   const [activeTab, setActiveTab]     = useState("attendance");
   const [toast, setToast]             = useState("");
   const [searchTerm, setSearchTerm]   = useState("");
-
-  // ERROR 1 FIXED: These are now properly inside the component as state
   const [ftStageFilter, setFtStageFilter]     = useState("all");
   const [ftActionLoading, setFtActionLoading] = useState({});
 
@@ -667,77 +572,69 @@ const AdminDashboard = () => {
     if (toast) { const t = setTimeout(() => setToast(""), 3500); return () => clearTimeout(t); }
   }, [toast]);
 
+  // ── FIX: properly destructure all 5 responses ──
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [membersRes, prayersRes, testimoniesRes, birthdaysRes] = await Promise.all([
+      const [membersRes, prayersRes, testimoniesRes, birthdaysRes, contactsRes] = await Promise.all([
         axios.get(`${API_URL}/api/members`),
         axios.get(`${API_URL}/api/prayers`),
         axios.get(`${API_URL}/api/testimonies`),
         axios.get(`${API_URL}/api/birthdays/upcoming`),
+        axios.get(`${API_URL}/api/contact`),   // ← correct URL (no 's')
       ]);
       setMembers(membersRes.data.data || []);
       setPrayers(prayersRes.data.data || []);
       setTestimonies(testimoniesRes.data.data || []);
       setBirthdays(birthdaysRes.data.data || []);
-    } catch (err) { console.error(err); }
+      setContacts(contactsRes.data.data || []);
+    } catch (err) { console.error("fetchData error:", err); }
     finally { setLoading(false); }
   };
 
   const submitAttendance = async () => {
-  const presentMembers = Object.keys(attendance).filter(id => attendance[id]);
-  const absentMembers = members
-    .filter(m => !attendance[m._id])
-    .map(m => ({
-      memberId: m._id,
-      name: `${m.firstName} ${m.lastName}`,
-      phone: m.phone || null,
-    }));
+    const presentMembers = Object.keys(attendance).filter(id => attendance[id]);
+    const absentMembers = members.filter(m => !attendance[m._id]).map(m => ({ memberId: m._id, name: `${m.firstName} ${m.lastName}`, phone: m.phone || null }));
+    if (presentMembers.length === 0) { alert("Please mark at least one member as present"); return; }
+    if (!attendanceMessage.trim()) { alert("Please enter a message for absentees"); return; }
+    setSubmittingAttendance(true);
+    try {
+      const res = await axios.post(`${API_URL}/api/attendance/mark`, { presentMembers, absentMembers, message: attendanceMessage, serviceType, serviceDate });
+      console.log("✅ Success:", res.data);
+      setToast(`✅ Attendance saved! ${presentMembers.length} present, ${absentMembers.length} absent.`);
+      setAttendance({});
+    } catch (err) {
+      const errData = err.response?.data;
+      console.error("❌ Error:", JSON.stringify(errData, null, 2));
+      alert(`Error ${err.response?.status}:\n${JSON.stringify(errData, null, 2)}`);
+    } finally { setSubmittingAttendance(false); }
+  };
 
-  if (presentMembers.length === 0) {
-    alert("Please mark at least one member as present");
-    return;
-  }
-  if (!attendanceMessage.trim()) {
-    alert("Please enter a message for absentees");
-    return;
-  }
-
-  setSubmittingAttendance(true);
-  try {
-    const payload = { presentMembers, absentMembers, message: attendanceMessage, serviceType, serviceDate };
-    console.log("📤 Payload:", JSON.stringify(payload, null, 2));
-
-    const res = await axios.post(`${API_URL}/api/attendance/mark`, payload);
-    console.log("✅ Success:", res.data);
-
-    setToast(`✅ Attendance saved! ${presentMembers.length} present, ${absentMembers.length} absent.`);
-    setAttendance({});
-  } catch (err) {
-    // Show the FULL backend error
-    const errData = err.response?.data;
-    const errStatus = err.response?.status;
-    const errMsg = errData?.error || errData?.message || errData || err.message;
-    
-    console.error("❌ Status:", errStatus);
-    console.error("❌ Full error data:", errData);
-    
-    // Show detailed error in alert so you can see it without DevTools
-    alert(`Error ${errStatus}:\n${typeof errMsg === "object" ? JSON.stringify(errMsg, null, 2) : errMsg}`);
-  } finally {
-    setSubmittingAttendance(false);
-  }
-};
   const sendFollowUp = async (member) => {
-    const id   = member._id;
+    const id = member._id;
     const name = member.firstName ? `${member.firstName} ${member.lastName}` : member.memberName;
     if (!member.phone) { alert(`${name} has no phone number`); return; }
     setSendingStates(p => ({ ...p, [id]: true }));
     try {
-      await axios.post(`${API_URL}/api/birthdays/${id}/message`, { name, phone: member.phone });
-      setToast(`✅ Message sent to ${name}`);
-    } catch (err) { alert(err.response?.data?.message || "Failed to send message"); }
-    finally { setSendingStates(p => ({ ...p, [id]: false })); }
+      const message = `Hello ${name}, wishing you a wonderful birthday from all of us at Heritage Church! 🎂 May God bless you abundantly on your special day! 🙏`;
+      await axios.post(`${API_URL}/api/birthdays/${id}/message`, { name, phone: member.phone, message });
+      setToast(`✅ Birthday message sent to ${name} 🎂`);
+    } catch (err) {
+      alert(err.response?.data?.message || err.response?.data?.error || "Failed to send message");
+    } finally { setSendingStates(p => ({ ...p, [id]: false })); }
+  };
+
+  const deleteMember = async (member) => {
+    const name = `${member.firstName} ${member.lastName}`;
+    if (!window.confirm(`Delete ${name}? This cannot be undone.`)) return;
+    setDeletingStates(p => ({ ...p, [member._id]: true }));
+    try {
+      await axios.delete(`${API_URL}/api/members/${member._id}`);
+      setToast(`✅ ${name} deleted successfully`);
+      fetchData();
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to delete member");
+    } finally { setDeletingStates(p => ({ ...p, [member._id]: false })); }
   };
 
   const handleFirstTimerAction = async (memberId, actionType, payload = {}) => {
@@ -756,13 +653,17 @@ const AdminDashboard = () => {
         if (!window.confirm("Convert this person to New Convert?")) return;
         await axios.put(`${API_URL}/api/members/${memberId}/followup/convert`);
         setToast("🎉 Converted to New Convert!");
+      } else if (actionType === "delete") {
+        const member = members.find(m => m._id === memberId);
+        const name = member ? `${member.firstName} ${member.lastName}` : "this member";
+        if (!window.confirm(`Delete ${name}? This cannot be undone.`)) return;
+        await axios.delete(`${API_URL}/api/members/${memberId}`);
+        setToast(`✅ ${name} deleted`);
       }
       fetchData();
     } catch (err) {
       alert(err.response?.data?.message || "Action failed");
-    } finally {
-      setFtActionLoading(p => ({ ...p, [memberId]: false }));
-    }
+    } finally { setFtActionLoading(p => ({ ...p, [memberId]: false })); }
   };
 
   const publishTestimony = async (id) => {
@@ -776,15 +677,23 @@ const AdminDashboard = () => {
     catch { alert("Failed to delete testimony"); }
   };
 
+  const deleteContact = async (id) => {
+    if (!window.confirm("Delete this message?")) return;
+    try {
+      await axios.delete(`${API_URL}/api/contact/${id}`);
+      setToast("✅ Message deleted!");
+      fetchData();
+    } catch { alert("Failed to delete message"); }
+  };
+
   if (loading) return <LoadingScreen />;
 
-  const filtered        = members.filter(m => `${m.firstName} ${m.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()));
-  const firstTimers     = members.filter(m => m.category === "First Timer");
-  const newConverts     = members.filter(m => m.category === "New Convert");
-  const regularMembers  = members.filter(m => m.category === "Member");
-  const presentCount    = Object.values(attendance).filter(Boolean).length;
+  const filtered       = members.filter(m => `${m.firstName} ${m.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()));
+  const firstTimers    = members.filter(m => m.category === "First Timer");
+  const newConverts    = members.filter(m => m.category === "New Convert");
+  const regularMembers = members.filter(m => m.category === "Member");
+  const presentCount   = Object.values(attendance).filter(Boolean).length;
 
-  // First timer filter groups
   const ftGroups = {
     all:       firstTimers,
     overdue:   firstTimers.filter(m => daysSince(m.firstVisitDate || m.createdAt) >= 14 && !["returned","converted"].includes(m.followUpStage)),
@@ -804,13 +713,13 @@ const AdminDashboard = () => {
     { id: "prayers",     label: "Prayers",            icon: "🙏" },
     { id: "testimonies", label: "Testimonies",        icon: "💬" },
     { id: "birthdays",   label: "Birthdays",          icon: "🎂" },
+    { id: "contacts",    label: "Messages",           icon: "✉️" },
   ];
 
   return (
     <div style={{ minHeight: "100vh", background: colors.soft, fontFamily: "'Segoe UI', sans-serif" }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}} @keyframes slideIn{from{transform:translateX(60px);opacity:0}to{transform:none;opacity:1}} *{box-sizing:border-box}`}</style>
 
-      {/* NAVBAR */}
       <nav style={{ position: "sticky", top: 0, zIndex: 100, background: colors.deepNavy, boxShadow: "0 2px 20px rgba(11,27,63,0.25)", padding: "0 24px" }}>
         <div style={{ maxWidth: 1340, margin: "0 auto", height: 62, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -824,7 +733,6 @@ const AdminDashboard = () => {
         </div>
       </nav>
 
-      {/* TOAST */}
       {toast && (
         <div style={{ position: "fixed", top: 74, right: 20, zIndex: 200, background: colors.deepNavy, color: "#fff", padding: "12px 22px", borderRadius: 10, fontWeight: 700, boxShadow: "0 4px 20px rgba(0,0,0,0.18)", fontSize: 14, borderLeft: `4px solid ${colors.gold}`, animation: "slideIn 0.3s ease" }}>
           {toast}
@@ -833,17 +741,17 @@ const AdminDashboard = () => {
 
       <div style={{ maxWidth: 1340, margin: "0 auto", padding: "28px 20px" }}>
 
-        {/* STATS */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 14, marginBottom: 28 }}>
+        {/* ── STAT CARDS — all counts shown ── */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 14, marginBottom: 28 }}>
           <StatCard label="Total Members"   value={members.length}        icon="👥" accent />
           <StatCard label="Regular"         value={regularMembers.length} icon="⭐" />
           <StatCard label="First Timers"    value={firstTimers.length}    icon="🆕" />
           <StatCard label="New Converts"    value={newConverts.length}    icon="✝️" />
           <StatCard label="Prayer Requests" value={prayers.length}        icon="🙏" />
           <StatCard label="Upcoming B-days" value={birthdays.length}      icon="🎂" />
+          <StatCard label="Messages"        value={contacts.length}       icon="✉️" />
         </div>
 
-        {/* TABS */}
         <div style={{ display: "flex", gap: 6, marginBottom: 24, overflowX: "auto", paddingBottom: 4 }}>
           {tabs.map(tab => (
             <button key={tab.id} onClick={() => { setActiveTab(tab.id); setSearchTerm(""); setFtStageFilter("all"); }}
@@ -853,7 +761,7 @@ const AdminDashboard = () => {
           ))}
         </div>
 
-        {/* ══ MARK ATTENDANCE ══ */}
+        {/* MARK ATTENDANCE */}
         {activeTab === "attendance" && (
           <div style={{ display: "grid", gridTemplateColumns: "1fr 360px", gap: 20, alignItems: "start" }}>
             <div style={{ background: "#fff", borderRadius: 16, padding: 28, border: "1.5px solid #e8eaf0", boxShadow: "0 2px 12px rgba(11,27,63,0.06)" }}>
@@ -898,18 +806,15 @@ const AdminDashboard = () => {
                   <input type="date" value={serviceDate} onChange={e => setServiceDate(e.target.value)} style={{ width: "100%", padding: "10px 13px", border: "1.5px solid #e2e8f0", borderRadius: 9, fontSize: 14, fontWeight: 600, color: colors.deepNavy, background: colors.soft, outline: "none" }} onFocus={e => e.target.style.borderColor = colors.deepNavy} onBlur={e => e.target.style.borderColor = "#e2e8f0"} />
                 </div>
               </div>
-
               <div style={{ background: "#fff", borderRadius: 16, padding: 22, border: "1.5px solid #e8eaf0", boxShadow: "0 2px 12px rgba(11,27,63,0.06)" }}>
                 <div style={{ fontWeight: 800, fontSize: 15, color: colors.deepNavy, marginBottom: 6 }}>✉️ Message to Absentees</div>
                 <div style={{ fontSize: 12, color: "#94a3b8", marginBottom: 10 }}>Use <code style={{ background: "#f1f5f9", padding: "1px 5px", borderRadius: 4 }}>{"{name}"}</code> to personalise</div>
                 <textarea value={attendanceMessage} onChange={e => setAttendanceMessage(e.target.value)} rows={4} style={{ width: "100%", padding: "11px 13px", border: "1.5px solid #e2e8f0", borderRadius: 10, fontSize: 13, outline: "none", resize: "vertical", fontFamily: "inherit", color: colors.deepNavy }} onFocus={e => e.target.style.borderColor = colors.deepNavy} onBlur={e => e.target.style.borderColor = "#e2e8f0"} />
               </div>
-
               <button onClick={submitAttendance} disabled={submittingAttendance || presentCount === 0}
                 style={{ width: "100%", padding: "16px 0", borderRadius: 12, fontWeight: 800, fontSize: 15, border: "none", cursor: submittingAttendance || presentCount === 0 ? "not-allowed" : "pointer", background: submittingAttendance || presentCount === 0 ? "#e2e8f0" : colors.deepNavy, color: submittingAttendance || presentCount === 0 ? "#94a3b8" : colors.gold, boxShadow: presentCount > 0 ? "0 4px 18px rgba(11,27,63,0.2)" : "none", transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
                 {submittingAttendance ? <><Spinner /><span>Saving…</span></> : `✓ Save Attendance (${presentCount} present)`}
               </button>
-
               <div style={{ background: `${colors.deepNavy}06`, border: `1px solid ${colors.deepNavy}15`, borderRadius: 10, padding: "12px 14px", fontSize: 12, color: "#475569", lineHeight: 1.6 }}>
                 <strong style={{ color: colors.deepNavy }}>How it works:</strong> Select the service type and date, check present members, then save. Absentees automatically receive your SMS.
               </div>
@@ -917,33 +822,33 @@ const AdminDashboard = () => {
           </div>
         )}
 
-        {/* ══ ATTENDANCE HISTORY ══ */}
         {activeTab === "history" && <AttendanceHistory totalMembers={members.length} />}
 
-        {/* ══ ALL MEMBERS ══ */}
+        {/* ALL MEMBERS — shows count in header */}
         {activeTab === "members" && (
           <div style={{ background: "#fff", borderRadius: 16, padding: 28, border: "1.5px solid #e8eaf0", boxShadow: "0 2px 12px rgba(11,27,63,0.06)" }}>
-            <SectionHeader title="All Members" count={members.length} />
+            <SectionHeader title="All Members" count={members.length} subtitle={`${regularMembers.length} Regular · ${firstTimers.length} First Timers · ${newConverts.length} New Converts`} />
             <SearchInput value={searchTerm} onChange={setSearchTerm} placeholder="Search by name…" />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 14 }}>
-              {filtered.map(m => <MemberCard key={m._id} member={m} onSendSMS={sendFollowUp} sending={sendingStates[m._id]} />)}
+              {filtered.map(m => (
+                <MemberCard key={m._id} member={m} onSendSMS={sendFollowUp} sending={sendingStates[m._id]} onDelete={deleteMember} deleting={deletingStates[m._id]} />
+              ))}
               {filtered.length === 0 && <div style={{ gridColumn: "1/-1", textAlign: "center", padding: 48, color: "#94a3b8" }}>No members found</div>}
             </div>
           </div>
         )}
 
-        {/* ══ FIRST TIMERS ══ */}
+        {/* FIRST TIMERS — shows count in header */}
         {activeTab === "firstTimers" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-            {/* Filter strip */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 12 }}>
               {[
-                { key: "all",       label: "All",         value: firstTimers.length,         color: colors.deepNavy, bg: "#EEF2FF" },
-                { key: "overdue",   label: "⚠️ Overdue",  value: ftGroups.overdue.length,    color: "#B91C1C",       bg: "#FEF2F2" },
-                { key: "due",       label: "⏰ Due Soon",  value: ftGroups.due.length,        color: "#92400E",       bg: "#FFFBEB" },
-                { key: "on_track",  label: "✅ On Track",  value: ftGroups.on_track.length,   color: "#15803D",       bg: "#F0FDF4" },
-                { key: "returned",  label: "🏠 Returned",  value: ftGroups.returned.length,   color: "#0369A1",       bg: "#E0F2FE" },
-                { key: "converted", label: "🎉 Converted", value: ftGroups.converted.length,  color: "#15803D",       bg: "#DCFCE7" },
+                { key: "all",       label: "All",         value: firstTimers.length,        color: colors.deepNavy, bg: "#EEF2FF" },
+                { key: "overdue",   label: "⚠️ Overdue",  value: ftGroups.overdue.length,   color: "#B91C1C",       bg: "#FEF2F2" },
+                { key: "due",       label: "⏰ Due Soon",  value: ftGroups.due.length,       color: "#92400E",       bg: "#FFFBEB" },
+                { key: "on_track",  label: "✅ On Track",  value: ftGroups.on_track.length,  color: "#15803D",       bg: "#F0FDF4" },
+                { key: "returned",  label: "🏠 Returned",  value: ftGroups.returned.length,  color: "#0369A1",       bg: "#E0F2FE" },
+                { key: "converted", label: "🎉 Converted", value: ftGroups.converted.length, color: "#15803D",       bg: "#DCFCE7" },
               ].map(s => (
                 <button key={s.key} onClick={() => setFtStageFilter(s.key)}
                   style={{ padding: "12px 10px", borderRadius: 12, border: `2px solid ${ftStageFilter === s.key ? s.color : "transparent"}`, background: ftStageFilter === s.key ? s.bg : "#fff", cursor: "pointer", textAlign: "center", transition: "all 0.15s", boxShadow: "0 1px 4px rgba(0,0,0,0.07)" }}>
@@ -952,8 +857,6 @@ const AdminDashboard = () => {
                 </button>
               ))}
             </div>
-
-            {/* Cards */}
             <div style={{ background: "#fff", borderRadius: 16, padding: 28, border: "1.5px solid #e8eaf0", boxShadow: "0 2px 12px rgba(11,27,63,0.06)" }}>
               <SectionHeader title="🆕 First Timers Follow-Up" count={ftDisplayed.length} subtitle="Track, follow up, and convert first-time visitors into members" />
               <SearchInput value={searchTerm} onChange={setSearchTerm} placeholder="Search first timer…" />
@@ -964,28 +867,28 @@ const AdminDashboard = () => {
                 </div>
               ) : (
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 16 }}>
-                  {ftDisplayed.map(m => (
-                    <FirstTimerCard key={m._id} member={m} onAction={handleFirstTimerAction} actionLoading={ftActionLoading[m._id]} />
-                  ))}
+                  {ftDisplayed.map(m => <FirstTimerCard key={m._id} member={m} onAction={handleFirstTimerAction} actionLoading={ftActionLoading[m._id]} />)}
                 </div>
               )}
             </div>
           </div>
         )}
 
-        {/* ══ NEW CONVERTS ══ */}
+        {/* NEW CONVERTS — shows count in header */}
         {activeTab === "newConverts" && (
           <div style={{ background: "#fff", borderRadius: 16, padding: 28, border: "1.5px solid #e8eaf0", boxShadow: "0 2px 12px rgba(11,27,63,0.06)" }}>
-            <SectionHeader title="✝️ New Converts" count={newConverts.length} />
+            <SectionHeader title="✝️ New Converts" count={newConverts.length} subtitle="Members who have recently given their lives to Christ" />
             <SearchInput value={searchTerm} onChange={setSearchTerm} placeholder="Search…" />
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 14 }}>
-              {newConverts.filter(m => `${m.firstName} ${m.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())).map(m => <MemberCard key={m._id} member={m} onSendSMS={sendFollowUp} sending={sendingStates[m._id]} />)}
+              {newConverts.filter(m => `${m.firstName} ${m.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())).map(m => (
+                <MemberCard key={m._id} member={m} onSendSMS={sendFollowUp} sending={sendingStates[m._id]} onDelete={deleteMember} deleting={deletingStates[m._id]} />
+              ))}
               {newConverts.length === 0 && <div style={{ gridColumn: "1/-1", textAlign: "center", padding: 48, color: "#94a3b8" }}>No new converts yet</div>}
             </div>
           </div>
         )}
 
-        {/* ══ PRAYERS ══ */}
+        {/* PRAYERS */}
         {activeTab === "prayers" && (
           <div style={{ background: "#fff", borderRadius: 16, padding: 28, border: "1.5px solid #e8eaf0", boxShadow: "0 2px 12px rgba(11,27,63,0.06)" }}>
             <SectionHeader title="🙏 Prayer Requests" count={prayers.length} />
@@ -1002,7 +905,7 @@ const AdminDashboard = () => {
           </div>
         )}
 
-        {/* ══ TESTIMONIES ══ */}
+        {/* TESTIMONIES */}
         {activeTab === "testimonies" && (
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, alignItems: "start" }}>
             <div style={{ background: "#fff", borderRadius: 16, padding: 24, border: "1.5px solid #FED7AA", boxShadow: "0 2px 12px rgba(11,27,63,0.06)" }}>
@@ -1032,7 +935,7 @@ const AdminDashboard = () => {
           </div>
         )}
 
-        {/* ══ BIRTHDAYS ══ */}
+        {/* BIRTHDAYS */}
         {activeTab === "birthdays" && (
           <div style={{ background: "#fff", borderRadius: 16, padding: 28, border: "1.5px solid #e8eaf0", boxShadow: "0 2px 12px rgba(11,27,63,0.06)" }}>
             <SectionHeader title="🎂 Upcoming Birthdays" count={birthdays.length} />
@@ -1057,6 +960,43 @@ const AdminDashboard = () => {
                   })}
                 </div>
             }
+          </div>
+        )}
+
+        {/* CONTACT MESSAGES */}
+        {activeTab === "contacts" && (
+          <div style={{ background: "#fff", borderRadius: 16, padding: 28, border: "1.5px solid #e8eaf0", boxShadow: "0 2px 12px rgba(11,27,63,0.06)" }}>
+            <SectionHeader title="✉️ Contact Messages" count={contacts.length} subtitle="Messages sent through the website contact form" />
+            {contacts.length === 0 ? (
+              <div style={{ textAlign: "center", padding: 48, color: "#94a3b8" }}>
+                <div style={{ fontSize: 40, marginBottom: 12 }}>📭</div>
+                <div style={{ fontWeight: 700, fontSize: 15 }}>No messages yet</div>
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                {contacts.map(c => (
+                  <div key={c._id} style={{ padding: "18px 22px", borderRadius: 14, border: "1.5px solid #e8eaf0", background: "#fafafa", display: "flex", flexDirection: "column", gap: 10 }}>
+                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+                      <div>
+                        <div style={{ fontWeight: 800, fontSize: 15, color: colors.deepNavy }}>{c.name}</div>
+                        <div style={{ fontSize: 12, color: "#64748b", marginTop: 3, display: "flex", gap: 12, flexWrap: "wrap" }}>
+                          {c.email && <span>✉️ {c.email}</span>}
+                          {c.phone && <span>📱 {c.phone}</span>}
+                          <span style={{ color: "#94a3b8" }}>🕐 {new Date(c.createdAt).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" })}</span>
+                        </div>
+                      </div>
+                      <button onClick={() => deleteContact(c._id)}
+                        style={{ padding: "6px 12px", borderRadius: 8, border: "none", background: "#FEF2F2", color: "#DC2626", fontWeight: 700, fontSize: 12, cursor: "pointer", flexShrink: 0 }}>
+                        🗑 Delete
+                      </button>
+                    </div>
+                    <div style={{ padding: "10px 14px", background: "#fff", borderRadius: 10, border: "1.5px solid #e8eaf0", fontSize: 14, color: "#475569", lineHeight: 1.7 }}>
+                      {c.message}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
