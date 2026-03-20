@@ -33,7 +33,7 @@ import FellowshipPage from './pages/Fellowship';
 import Login from './pages/admin/Login';
 import Dashboard from './pages/admin/Dashboard';
 import PrivateAdminRoute from './pages/admin/PrivateAdminroute';
-
+import ResetPassword from './pages/ResetPassword'; // ← ADDED
 
 function App() {
   return (
@@ -70,6 +70,7 @@ function App() {
 
             {/* Admin routes */}
             <Route path="/Admin/login" element={<Login />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} /> {/* ← ADDED */}
 
             <Route
               path="/Admin/dashboard"
@@ -79,14 +80,6 @@ function App() {
                 </PrivateAdminRoute>
               }
             />
-            {/* <Route
-              path="/Admin/testimony"
-              element={
-                <PrivateAdminRoute>
-                  <Testimony />
-                </PrivateAdminRoute>
-              }
-            /> */}
           </Routes>
         </main>
         <Footer />

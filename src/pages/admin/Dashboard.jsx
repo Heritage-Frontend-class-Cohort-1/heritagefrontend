@@ -130,6 +130,9 @@ const MemberCard = ({ member, onSendSMS, sending, onDelete, deleting }) => (
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontWeight: 700, fontSize: 15, color: colors.deepNavy, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{member.firstName} {member.lastName}</div>
         <div style={{ fontSize: 12, color: "#64748b", marginTop: 2 }}>{member.phone || <span style={{ color: "#ef4444" }}>⚠ No phone</span>}</div>
+        {member.numberOfServices !== undefined && (
+          <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 2 }}>⛪ {member.numberOfServices} service{member.numberOfServices !== 1 ? "s" : ""} attended</div>
+        )}
       </div>
       <CategoryBadge category={member.category} />
     </div>
@@ -330,14 +333,14 @@ const SessionModal = ({ session, onClose }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchSession = async () => {
       try {
         const res = await axios.get(`${API_URL}/api/attendance/session`, { params: { serviceDate: session.serviceDate, serviceType: session.serviceType } });
         setDetail(res.data);
       } catch (e) { console.error(e); }
       finally { setLoading(false); }
     };
-    fetch();
+    fetchSession();
   }, [session]);
 
   const dateStr = new Date(session.serviceDate).toLocaleDateString("en-NG", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
@@ -400,7 +403,8 @@ const SessionModal = ({ session, onClose }) => {
 };
 
 /* ─── ATTENDANCE HISTORY TAB ─── */
-const AttendanceHistory = ({ totalMembers }) => {
+/* ✅ FIX: accepts refreshKey prop so it re-fetches whenever attendance is saved */
+const AttendanceHistory = ({ totalMembers, refreshKey }) => {
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear]   = useState(now.getFullYear());
@@ -408,16 +412,17 @@ const AttendanceHistory = ({ totalMembers }) => {
   const [loading, setLoading] = useState(false);
   const [selectedSession, setSelectedSession] = useState(null);
 
-  const fetchHistory = useCallback(async () => {
+ const fetchHistory = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_URL}/api/attendance/history`, { params: { month, year } });
+      const res = await axios.get(`${API_URL}/api/attendance/history`, { params: { month, year, _t: Date.now() } });
       setData(res.data);
     } catch (e) { console.error(e); }
     finally { setLoading(false); }
   }, [month, year]);
 
-  useEffect(() => { fetchHistory(); }, [fetchHistory]);
+  /* ✅ FIX: refreshKey added as dependency — any time parent bumps it, history re-fetches */
+  useEffect(() => { fetchHistory(); }, [fetchHistory, refreshKey]);
 
   const years = [now.getFullYear() - 1, now.getFullYear(), now.getFullYear() + 1];
   const sessions = data?.sessions || [];
@@ -561,6 +566,9 @@ const AdminDashboard = () => {
   const [attendanceMessage, setAttendanceMessage] = useState("Hello {name}, we missed you at church today. Please reach out if there's any issue.");
   const [submittingAttendance, setSubmittingAttendance] = useState(false);
 
+  /* ✅ FIX 1: refreshKey to trigger AttendanceHistory re-fetch */
+  const [attendanceRefreshKey, setAttendanceRefreshKey] = useState(0);
+
   const [activeTab, setActiveTab]     = useState("attendance");
   const [toast, setToast]             = useState("");
   const [searchTerm, setSearchTerm]   = useState("");
@@ -572,7 +580,6 @@ const AdminDashboard = () => {
     if (toast) { const t = setTimeout(() => setToast(""), 3500); return () => clearTimeout(t); }
   }, [toast]);
 
-  // ── FIX: properly destructure all 5 responses ──
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -581,7 +588,7 @@ const AdminDashboard = () => {
         axios.get(`${API_URL}/api/prayers`),
         axios.get(`${API_URL}/api/testimonies`),
         axios.get(`${API_URL}/api/birthdays/upcoming`),
-        axios.get(`${API_URL}/api/contact`),   // ← correct URL (no 's')
+        axios.get(`${API_URL}/api/contact`),
       ]);
       setMembers(membersRes.data.data || []);
       setPrayers(prayersRes.data.data || []);
@@ -594,20 +601,30 @@ const AdminDashboard = () => {
 
   const submitAttendance = async () => {
     const presentMembers = Object.keys(attendance).filter(id => attendance[id]);
-    const absentMembers = members.filter(m => !attendance[m._id]).map(m => ({ memberId: m._id, name: `${m.firstName} ${m.lastName}`, phone: m.phone || null }));
+    const absentMembers = members
+      .filter(m => !attendance[m._id])
+      .map(m => ({ memberId: m._id, name: `${m.firstName} ${m.lastName}`, phone: m.phone || null }));
+
     if (presentMembers.length === 0) { alert("Please mark at least one member as present"); return; }
     if (!attendanceMessage.trim()) { alert("Please enter a message for absentees"); return; }
+
     setSubmittingAttendance(true);
     try {
-      const res = await axios.post(`${API_URL}/api/attendance/mark`, { presentMembers, absentMembers, message: attendanceMessage, serviceType, serviceDate });
+      const res = await axios.post(`${API_URL}/api/attendance/mark`, {
+        presentMembers, absentMembers, message: attendanceMessage, serviceType, serviceDate
+      });
       console.log("✅ Success:", res.data);
       setToast(`✅ Attendance saved! ${presentMembers.length} present, ${absentMembers.length} absent.`);
       setAttendance({});
+      await fetchData(); // ✅ FIX 2: refresh members so numberOfServices updates
+      setAttendanceRefreshKey(k => k + 1); // ✅ FIX 3: trigger AttendanceHistory to re-fetch
     } catch (err) {
       const errData = err.response?.data;
       console.error("❌ Error:", JSON.stringify(errData, null, 2));
       alert(`Error ${err.response?.status}:\n${JSON.stringify(errData, null, 2)}`);
-    } finally { setSubmittingAttendance(false); }
+    } finally {
+      setSubmittingAttendance(false);
+    }
   };
 
   const sendFollowUp = async (member) => {
@@ -741,7 +758,7 @@ const AdminDashboard = () => {
 
       <div style={{ maxWidth: 1340, margin: "0 auto", padding: "28px 20px" }}>
 
-        {/* ── STAT CARDS — all counts shown ── */}
+        {/* STAT CARDS */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 14, marginBottom: 28 }}>
           <StatCard label="Total Members"   value={members.length}        icon="👥" accent />
           <StatCard label="Regular"         value={regularMembers.length} icon="⭐" />
@@ -752,6 +769,7 @@ const AdminDashboard = () => {
           <StatCard label="Messages"        value={contacts.length}       icon="✉️" />
         </div>
 
+        {/* TABS */}
         <div style={{ display: "flex", gap: 6, marginBottom: 24, overflowX: "auto", paddingBottom: 4 }}>
           {tabs.map(tab => (
             <button key={tab.id} onClick={() => { setActiveTab(tab.id); setSearchTerm(""); setFtStageFilter("all"); }}
@@ -822,9 +840,10 @@ const AdminDashboard = () => {
           </div>
         )}
 
-        {activeTab === "history" && <AttendanceHistory totalMembers={members.length} />}
-
-        {/* ALL MEMBERS — shows count in header */}
+        <div style={{ display: activeTab === "history" ? "block" : "none" }}>
+  <AttendanceHistory totalMembers={members.length} refreshKey={attendanceRefreshKey} />
+</div>
+        {/* ALL MEMBERS */}
         {activeTab === "members" && (
           <div style={{ background: "#fff", borderRadius: 16, padding: 28, border: "1.5px solid #e8eaf0", boxShadow: "0 2px 12px rgba(11,27,63,0.06)" }}>
             <SectionHeader title="All Members" count={members.length} subtitle={`${regularMembers.length} Regular · ${firstTimers.length} First Timers · ${newConverts.length} New Converts`} />
@@ -838,7 +857,7 @@ const AdminDashboard = () => {
           </div>
         )}
 
-        {/* FIRST TIMERS — shows count in header */}
+        {/* FIRST TIMERS */}
         {activeTab === "firstTimers" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 12 }}>
@@ -874,7 +893,7 @@ const AdminDashboard = () => {
           </div>
         )}
 
-        {/* NEW CONVERTS — shows count in header */}
+        {/* NEW CONVERTS */}
         {activeTab === "newConverts" && (
           <div style={{ background: "#fff", borderRadius: 16, padding: 28, border: "1.5px solid #e8eaf0", boxShadow: "0 2px 12px rgba(11,27,63,0.06)" }}>
             <SectionHeader title="✝️ New Converts" count={newConverts.length} subtitle="Members who have recently given their lives to Christ" />
