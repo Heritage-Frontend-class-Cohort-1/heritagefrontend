@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
+import Broadcast from "./Broadcast";
 
 const colors = {
   deepNavy: "#0B1B3F",
@@ -10,7 +11,7 @@ const colors = {
   soft: "#F4F6FB",
 };
 
-const API_URL = import.meta.env.VITE_API_URL || "https://backend-heritage-10.onrender.com";
+const API_URL = import.meta.env.VITE_API_URL || "https://backend-heritage-7.onrender.com";
 
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const MONTHS_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -142,8 +143,8 @@ const MemberCard = ({ member, onSendSMS, sending, onDelete, deleting }) => (
         {sending ? "Sending…" : "📱 Send SMS"}
       </button>
       <button disabled={deleting} onClick={() => onDelete(member)}
-        style={{ padding: "8px 12px", borderRadius: 9, fontWeight: 700, fontSize: 13, border: "none", cursor: deleting ? "not-allowed" : "pointer", background: deleting ? "#e2e8f0" : "#FEF2F2", color: deleting ? "#94a3b8" : "#DC2626" }}>
-        {deleting ? "…" : "🗑"}
+        style={{ padding: "8px 12px", borderRadius: 9, fontWeight: 700, fontSize: 13, border: "none", cursor: deleting ? "not-allowed" : "pointer", background: deleting ? "#e2e8f0" : "#FEF2F2", color: deleting ? "#94a3b8" : "#DC2626", display: "flex", alignItems: "center", justifyContent: "center", minWidth: 36 }}>
+        {deleting ? <Spinner size={14} color="#94a3b8" /> : "🗑"}
       </button>
     </div>
   </div>
@@ -214,8 +215,8 @@ const FirstTimerCard = ({ member, onAction, actionLoading }) => {
         <div style={{ display: "flex", flexDirection: "column", gap: 5, alignItems: "flex-end" }}>
           <span style={{ fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 20, background: stage.bg, color: stage.color, flexShrink: 0 }}>{stage.label}</span>
           <button onClick={() => onAction(member._id, "delete")} disabled={actionLoading}
-            style={{ padding: "3px 8px", borderRadius: 7, border: "none", background: "#FEF2F2", color: "#DC2626", fontWeight: 700, fontSize: 11, cursor: "pointer" }}>
-            🗑 Delete
+            style={{ padding: "3px 8px", borderRadius: 7, border: "none", background: actionLoading ? "#e2e8f0" : "#FEF2F2", color: actionLoading ? "#94a3b8" : "#DC2626", fontWeight: 700, fontSize: 11, cursor: actionLoading ? "not-allowed" : "pointer", display: "flex", alignItems: "center", gap: 4, minWidth: 60, justifyContent: "center" }}>
+            {actionLoading ? <><Spinner size={11} color="#94a3b8" /><span>Deleting…</span></> : "🗑 Delete"}
           </button>
         </div>
       </div>
@@ -403,7 +404,6 @@ const SessionModal = ({ session, onClose }) => {
 };
 
 /* ─── ATTENDANCE HISTORY TAB ─── */
-/* ✅ FIX: accepts refreshKey prop so it re-fetches whenever attendance is saved */
 const AttendanceHistory = ({ totalMembers, refreshKey }) => {
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
@@ -412,7 +412,7 @@ const AttendanceHistory = ({ totalMembers, refreshKey }) => {
   const [loading, setLoading] = useState(false);
   const [selectedSession, setSelectedSession] = useState(null);
 
- const fetchHistory = useCallback(async () => {
+  const fetchHistory = useCallback(async () => {
     setLoading(true);
     try {
       const res = await axios.get(`${API_URL}/api/attendance/history`, { params: { month, year, _t: Date.now() } });
@@ -421,7 +421,6 @@ const AttendanceHistory = ({ totalMembers, refreshKey }) => {
     finally { setLoading(false); }
   }, [month, year]);
 
-  /* ✅ FIX: refreshKey added as dependency — any time parent bumps it, history re-fetches */
   useEffect(() => { fetchHistory(); }, [fetchHistory, refreshKey]);
 
   const years = [now.getFullYear() - 1, now.getFullYear(), now.getFullYear() + 1];
@@ -565,14 +564,12 @@ const AdminDashboard = () => {
   const [serviceDate, setServiceDate] = useState(() => new Date().toISOString().split("T")[0]);
   const [attendanceMessage, setAttendanceMessage] = useState("Hello {name}, we missed you at church today. Please reach out if there's any issue.");
   const [submittingAttendance, setSubmittingAttendance] = useState(false);
-
-  /* ✅ FIX 1: refreshKey to trigger AttendanceHistory re-fetch */
   const [attendanceRefreshKey, setAttendanceRefreshKey] = useState(0);
 
-  const [activeTab, setActiveTab]     = useState("attendance");
-  const [toast, setToast]             = useState("");
-  const [searchTerm, setSearchTerm]   = useState("");
-  const [ftStageFilter, setFtStageFilter]     = useState("all");
+  const [activeTab, setActiveTab]         = useState("attendance");
+  const [toast, setToast]                 = useState("");
+  const [searchTerm, setSearchTerm]       = useState("");
+  const [ftStageFilter, setFtStageFilter] = useState("all");
   const [ftActionLoading, setFtActionLoading] = useState({});
 
   useEffect(() => { fetchData(); }, []);
@@ -610,14 +607,13 @@ const AdminDashboard = () => {
 
     setSubmittingAttendance(true);
     try {
-      const res = await axios.post(`${API_URL}/api/attendance/mark`, {
+      await axios.post(`${API_URL}/api/attendance/mark`, {
         presentMembers, absentMembers, message: attendanceMessage, serviceType, serviceDate
       });
-      console.log("✅ Success:", res.data);
       setToast(`✅ Attendance saved! ${presentMembers.length} present, ${absentMembers.length} absent.`);
       setAttendance({});
-      await fetchData(); // ✅ FIX 2: refresh members so numberOfServices updates
-      setAttendanceRefreshKey(k => k + 1); // ✅ FIX 3: trigger AttendanceHistory to re-fetch
+      await fetchData();
+      setAttendanceRefreshKey(k => k + 1);
     } catch (err) {
       const errData = err.response?.data;
       console.error("❌ Error:", JSON.stringify(errData, null, 2));
@@ -690,17 +686,24 @@ const AdminDashboard = () => {
 
   const deleteTestimony = async (id) => {
     if (!window.confirm("Delete this testimony?")) return;
-    try { await axios.delete(`${API_URL}/api/testimonies/${id}`); setToast("✅ Testimony deleted!"); fetchData(); }
-    catch { alert("Failed to delete testimony"); }
+    setDeletingStates(p => ({ ...p, [id]: true }));
+    try {
+      await axios.delete(`${API_URL}/api/testimonies/${id}`);
+      setToast("✅ Testimony deleted!");
+      fetchData();
+    } catch { alert("Failed to delete testimony"); }
+    finally { setDeletingStates(p => ({ ...p, [id]: false })); }
   };
 
   const deleteContact = async (id) => {
     if (!window.confirm("Delete this message?")) return;
+    setDeletingStates(p => ({ ...p, [id]: true }));
     try {
       await axios.delete(`${API_URL}/api/contact/${id}`);
       setToast("✅ Message deleted!");
       fetchData();
     } catch { alert("Failed to delete message"); }
+    finally { setDeletingStates(p => ({ ...p, [id]: false })); }
   };
 
   if (loading) return <LoadingScreen />;
@@ -719,7 +722,9 @@ const AdminDashboard = () => {
     returned:  firstTimers.filter(m => m.returnedToChurch || m.followUpStage === "returned"),
     converted: firstTimers.filter(m => m.followUpStage === "converted"),
   };
-  const ftDisplayed = (ftGroups[ftStageFilter] || firstTimers).filter(m => `${m.firstName} ${m.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()));
+  const ftDisplayed = (ftGroups[ftStageFilter] || firstTimers).filter(m =>
+    `${m.firstName} ${m.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const tabs = [
     { id: "attendance",  label: "Mark Attendance",   icon: "📋" },
@@ -731,6 +736,7 @@ const AdminDashboard = () => {
     { id: "testimonies", label: "Testimonies",        icon: "💬" },
     { id: "birthdays",   label: "Birthdays",          icon: "🎂" },
     { id: "contacts",    label: "Messages",           icon: "✉️" },
+    { id: "broadcast",   label: "Broadcast",          icon: "📣" },
   ];
 
   return (
@@ -840,9 +846,11 @@ const AdminDashboard = () => {
           </div>
         )}
 
+        {/* ATTENDANCE HISTORY */}
         <div style={{ display: activeTab === "history" ? "block" : "none" }}>
-  <AttendanceHistory totalMembers={members.length} refreshKey={attendanceRefreshKey} />
-</div>
+          <AttendanceHistory totalMembers={members.length} refreshKey={attendanceRefreshKey} />
+        </div>
+
         {/* ALL MEMBERS */}
         {activeTab === "members" && (
           <div style={{ background: "#fff", borderRadius: 16, padding: 28, border: "1.5px solid #e8eaf0", boxShadow: "0 2px 12px rgba(11,27,63,0.06)" }}>
@@ -946,7 +954,10 @@ const AdminDashboard = () => {
                     <div key={t._id} style={{ padding: 16, background: "#F0FDF4", border: "1.5px solid #86EFAC", borderRadius: 10, marginBottom: 10 }}>
                       <div style={{ fontWeight: 700, color: colors.deepNavy }}>{t.title}</div>
                       <div style={{ fontSize: 12, color: "#065F46", marginTop: 3 }}>by {t.name}</div>
-                      <button onClick={() => deleteTestimony(t._id)} style={{ marginTop: 10, padding: "6px 16px", borderRadius: 7, background: "#DC2626", color: "#fff", border: "none", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>🗑 Delete</button>
+                      <button onClick={() => deleteTestimony(t._id)} disabled={deletingStates[t._id]}
+                        style={{ marginTop: 10, padding: "6px 16px", borderRadius: 7, background: deletingStates[t._id] ? "#e2e8f0" : "#DC2626", color: deletingStates[t._id] ? "#94a3b8" : "#fff", border: "none", fontWeight: 700, fontSize: 12, cursor: deletingStates[t._id] ? "not-allowed" : "pointer", display: "flex", alignItems: "center", gap: 6 }}>
+                        {deletingStates[t._id] ? <><Spinner size={12} color="#94a3b8" /><span>Deleting…</span></> : "🗑 Delete"}
+                      </button>
                     </div>
                   ))
               }
@@ -972,7 +983,7 @@ const AdminDashboard = () => {
                         </div>
                         <button disabled={!b.phone || sendingStates[b._id]} onClick={() => sendFollowUp(b)}
                           style={{ padding: "7px 14px", borderRadius: 8, border: "none", background: b.phone && !sendingStates[b._id] ? colors.deepNavy : "#e2e8f0", color: b.phone && !sendingStates[b._id] ? colors.gold : "#94a3b8", fontWeight: 700, fontSize: 12, cursor: b.phone && !sendingStates[b._id] ? "pointer" : "not-allowed" }}>
-                          {sendingStates[b._id] ? "…" : "🎁 Send"}
+                          {sendingStates[b._id] ? <Spinner size={14} color="#94a3b8" /> : "🎁 Send"}
                         </button>
                       </div>
                     );
@@ -1004,9 +1015,9 @@ const AdminDashboard = () => {
                           <span style={{ color: "#94a3b8" }}>🕐 {new Date(c.createdAt).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" })}</span>
                         </div>
                       </div>
-                      <button onClick={() => deleteContact(c._id)}
-                        style={{ padding: "6px 12px", borderRadius: 8, border: "none", background: "#FEF2F2", color: "#DC2626", fontWeight: 700, fontSize: 12, cursor: "pointer", flexShrink: 0 }}>
-                        🗑 Delete
+                      <button onClick={() => deleteContact(c._id)} disabled={deletingStates[c._id]}
+                        style={{ padding: "6px 12px", borderRadius: 8, border: "none", background: deletingStates[c._id] ? "#e2e8f0" : "#FEF2F2", color: deletingStates[c._id] ? "#94a3b8" : "#DC2626", fontWeight: 700, fontSize: 12, cursor: deletingStates[c._id] ? "not-allowed" : "pointer", flexShrink: 0, display: "flex", alignItems: "center", gap: 6 }}>
+                        {deletingStates[c._id] ? <><Spinner size={12} color="#94a3b8" /><span>Deleting…</span></> : "🗑 Delete"}
                       </button>
                     </div>
                     <div style={{ padding: "10px 14px", background: "#fff", borderRadius: 10, border: "1.5px solid #e8eaf0", fontSize: 14, color: "#475569", lineHeight: 1.7 }}>
@@ -1017,6 +1028,15 @@ const AdminDashboard = () => {
               </div>
             )}
           </div>
+        )}
+
+        {/* BROADCAST */}
+        {activeTab === "broadcast" && (
+          <Broadcast
+            members={members}
+            apiUrl={API_URL}
+            onToast={setToast}
+          />
         )}
 
       </div>

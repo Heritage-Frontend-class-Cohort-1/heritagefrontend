@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Church, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
+
+const LOGO_URL = "https://www.rccg.org/wp-content/uploads/2020/11/rccg-for-web.png";
 
 const navLinks = [
   { name: "Home", path: "/" },
@@ -11,9 +13,8 @@ const navLinks = [
       { name: "Our Journey", path: "/information/journey" },
       { name: "Heritage in Numbers", path: "/information/heritage-in-number" },
       { name: "Mission & Vision", path: "/information/mission-vision" },
-       { name: "What We Believe", path: "/information/believe" },
+      { name: "What We Believe", path: "/information/believe" },
       { name: "Our Leadership", path: "/information/leadership" },
-     
     ],
   },
   { name: "Sermons", path: "/sermons" },
@@ -34,11 +35,19 @@ const navLinks = [
 ];
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false); // mobile menu toggle
-  // Track which mobile dropdown is open by name (e.g., "Who We Are" or "Explore Heritage")
-  const [activeMobileDropdown, setActiveMobileDropdown] = useState(null); 
-  
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeMobileDropdown, setActiveMobileDropdown] = useState(null);
+  const [scrolled, setScrolled] = useState(false);
+
   const location = useLocation();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const isActive = (path, children) => {
     if (location.pathname === path) return true;
@@ -51,18 +60,22 @@ const Navbar = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur border-b border-gray-200/30">
-      <nav className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+    <header className={`fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur border-b border-gray-200/30 transition-all duration-300 ${scrolled ? "shadow-md" : ""}`}>
+      <nav className={`max-w-7xl mx-auto px-4 flex items-center justify-between transition-all duration-300 ${scrolled ? "h-16" : "h-24"}`}>
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3">
-          <Church className="h-9 w-9 text-amber-500" />
-          <span className="text-2xl font-bold text-blue-950">
+          <img
+            src={LOGO_URL}
+            alt="Lord's Heritage House Logo"
+            className={`object-contain transition-all duration-300 ${scrolled ? "h-10 w-10" : "h-20 w-20"}`}
+          />
+          <span className={`font-bold text-blue-950 transition-all duration-300 ${scrolled ? "text-xl" : "text-2xl"}`}>
             Lord's Heritage House
           </span>
         </Link>
 
         {/* Desktop Menu */}
-        <div className="hidden md:flex items-center gap-10">
+        <div className="hidden md:flex items-center gap-10" role="navigation" aria-label="Main navigation">
           {navLinks.map((link) =>
             link.children ? (
               <div key={link.name} className="relative group">
@@ -72,6 +85,8 @@ const Navbar = () => {
                       ? "text-amber-500"
                       : "text-gray-600 hover:text-blue-950"
                   }`}
+                  aria-haspopup="true"
+                  aria-label={`${link.name} submenu`}
                 >
                   {link.name} <ChevronDown size={16} />
                 </button>
@@ -114,6 +129,9 @@ const Navbar = () => {
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="md:hidden p-2 text-blue-950"
+          aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={isOpen}
+          aria-controls="mobile-menu"
         >
           {isOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
@@ -121,7 +139,12 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden bg-white border-t border-gray-200/30 shadow-lg overflow-y-auto max-h-[calc(100vh-64px)]">
+        <div
+          id="mobile-menu"
+          role="navigation"
+          aria-label="Mobile navigation"
+          className={`md:hidden bg-white border-t border-gray-200/30 shadow-lg overflow-y-auto max-h-[calc(100vh-${scrolled ? "64px" : "96px"})]`}
+        >
           <div className="px-6 py-6 space-y-5">
             {navLinks.map((link) =>
               link.children ? (
@@ -131,6 +154,9 @@ const Navbar = () => {
                     className={`w-full text-left font-medium flex justify-between items-center ${
                         isActive(link.path, link.children) ? "text-amber-500" : "text-gray-600"
                     }`}
+                    aria-expanded={activeMobileDropdown === link.name}
+                    aria-haspopup="true"
+                    aria-label={`${link.name} submenu`}
                   >
                     {link.name} 
                     <ChevronDown size={16} className={`transition-transform ${activeMobileDropdown === link.name ? "rotate-180" : ""}`} />

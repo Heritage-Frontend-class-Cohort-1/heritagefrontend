@@ -43,6 +43,40 @@ const dailyVerses = [
   { v: "I will praise you, for I am fearfully and wonderfully made.", r: "Psalm 139:14" }
 ];
 
+const services = [
+  {
+    day: "Sundays",
+    items: [
+      { name: "Sunday Service", time: "8:00 AM" },
+      { name: "Thanksgiving Service", time: "8:00 AM", note: "1st Sunday" },
+      { name: "Communion Service", time: "5:00 PM", note: "1st Sunday" },
+      { name: "Youth Sunday", time: "8:00 AM", note: "3rd Sunday" },
+    ],
+  },
+  {
+    day: "Tuesdays",
+    items: [
+      { name: "Digging Deep", time: "5:00 PM" },
+    ],
+  },
+  {
+    day: "Thursdays",
+    items: [{ name: "Faith Clinic", time: "5:00 PM" }],
+  },
+  {
+    day: "Fridays",
+    items: [
+      { name: "Congregational Vigil", time: "10:00 PM", note: "Last Friday" },
+    ],
+  },
+  {
+    day: "Saturdays",
+    items: [
+      { name: "Women of Destiny Meeting", time: "12:00 PM", note: "3rd Saturday" },
+    ],
+  },
+];
+
 const Home = () => {
   const heroImages = [heroImage, pic001, pic002, pic003];
   const [currentImage, setCurrentImage] = useState(0);
@@ -105,7 +139,7 @@ const Home = () => {
             style={{ 
               backgroundImage: `url(${img})`, 
               backgroundSize: "cover",
-              backgroundPosition: "center", // Fixed the 'choir' variable error
+              backgroundPosition: "center",
               filter: "brightness(0.65) contrast(1.1)"
             }}
           />
@@ -149,11 +183,10 @@ const Home = () => {
 
       {/* YEAR IMAGE */}
       <section className="py-12 text-center bg-white">
-  {/* Changed max-w-4xl to max-w-6xl or max-w-full */}
-  <div className="max-w-6xl mx-auto px-4">
-    <img src={year2026} alt="Year 2026" className="rounded-2xl shadow-2xl mx-auto w-full" />
-  </div>
-</section>
+        <div className="max-w-6xl mx-auto px-4">
+          <img src={year2026} alt="Year 2026" className="rounded-2xl shadow-2xl mx-auto w-full" />
+        </div>
+      </section>
 
       {/* QUICK LINKS */}
       <section className="py-20 bg-[#142A5A]">
@@ -190,7 +223,6 @@ const Home = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            {/* Account 1 */}
             <motion.div whileHover={{ y: -10 }} className="bg-white p-10 rounded-[2.5rem] shadow-xl border border-slate-100 relative group">
               <h3 className="text-sm font-black tracking-widest text-amber-600 uppercase mb-6">Tithes & Offerings</h3>
               <div className="space-y-4 text-blue-950">
@@ -204,7 +236,6 @@ const Home = () => {
               </div>
             </motion.div>
 
-            {/* Account 2 */}
             <motion.div whileHover={{ y: -10 }} className="bg-blue-950 p-10 rounded-[2.5rem] shadow-2xl text-white relative group">
               <h3 className="text-sm font-black tracking-widest text-amber-400 uppercase mb-6">Building & Projects</h3>
               <div className="space-y-4">
@@ -221,48 +252,95 @@ const Home = () => {
         </div>
       </section>
 
-      {/* FELLOWSHIPS */}
-     {/* FELLOWSHIPS */}
-     <section className="py-20 bg-gray-100">
-  <div className="container mx-auto px-4 text-center">
-    {/* Bible Verse Header */}
-    <div className="max-w-2xl mx-auto mb-12">
-      <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4 text-blue-900 uppercase tracking-widest">
-        Connect, Grow & Thrive
-      </h2>
-      <p className="text-slate-600 italic text-lg border-l-4 border-amber-500 pl-4 py-2 bg-amber-500/5 rounded-r-xl">
-        "From him the whole body, joined and held together by every supporting ligament, 
-        grows and builds itself up in love, as each part does its work."
-        <span className="block font-bold mt-1 text-amber-700">— Ephesians 4:16</span>
-      </p>
-    </div>
+      {/* OUR SERVICES — placed after Giving */}
+      <section className="py-20 bg-[#0B1B3F] px-4 md:px-8">
+        <div className="max-w-5xl mx-auto">
 
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-      {[
-        { title: "Youth & Adult", icon: Users, link: "youth-and-adult" },
-        { title: "Teenagers", icon: UserCheck, link: "teenagers" },
-        { title: "Women Fellowship", icon: Heart, link: "women-fellowship" },
-        { title: "Men Fellowship", icon: Speaker, link: "men-fellowship" },
-      ].map((group, idx) => (
-        /* Changed <Link> to <a> for external/new tab behavior */
-        <a 
-          key={idx} 
-          href={`/fellowships/${group.link}`} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="group flex flex-col items-center p-8 bg-white rounded-3xl shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-transparent hover:border-amber-200 cursor-pointer"
-        >
-          <div className="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-amber-400 transition-colors">
-            <group.icon className="h-8 w-8 text-amber-600 group-hover:text-white" />
+          {/* Section header */}
+          <div className="text-center mb-14">
+            <h2 className="text-4xl md:text-5xl font-serif font-bold text-white uppercase tracking-widest mb-4">
+              Our Services
+            </h2>
+            <div className="w-16 h-1 bg-amber-400 mx-auto rounded-full mb-6" />
+            <p className="text-slate-400 text-lg max-w-xl mx-auto leading-relaxed">
+              We hold services on Sundays, Tuesdays, Thursdays and Fridays —
+              designed to serve different needs of human existence.
+            </p>
           </div>
-          <h3 className="text-lg font-bold text-gray-900 uppercase">{group.title}</h3>
-          {/* Subtle indicator that it opens in a new tab */}
-          
-        </a>
-      ))}
-    </div>
-  </div>
-</section>
+
+          {/* Single rounded container — all days inside, separated by dividers */}
+          <div className="rounded-3xl overflow-hidden border border-white/10">
+            {services.map((col, colIdx) => (
+              <div
+                key={col.day}
+                className={`px-8 md:px-14 py-8 md:py-10 ${
+                  colIdx % 2 === 0 ? "bg-white/5" : "bg-white/[0.02]"
+                } ${colIdx !== services.length - 1 ? "border-b border-white/10" : ""}`}
+              >
+                {/* Day label */}
+                <p className="text-amber-400 text-xs font-black uppercase tracking-[0.2em] mb-5">
+                  {col.day}
+                </p>
+
+                {/* Services — laid out horizontally, wraps on small screens */}
+                <div className="flex flex-wrap gap-x-10 gap-y-6">
+                  {col.items.map((item, i) => (
+                    <div key={i} className="flex flex-col gap-1">
+                      <span className="text-white text-xl md:text-2xl font-semibold leading-snug">
+                        {item.name}
+                      </span>
+                      {item.note && (
+                        <span className="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-400/10 border border-amber-400/25 rounded px-2 py-0.5 w-fit">
+                          {item.note}
+                        </span>
+                      )}
+                      <span className="text-slate-400 text-base">{item.time}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FELLOWSHIPS */}
+      <section className="py-20 bg-gray-100">
+        <div className="container mx-auto px-4 text-center">
+          <div className="max-w-2xl mx-auto mb-12">
+            <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4 text-blue-900 uppercase tracking-widest">
+              Connect, Grow & Thrive
+            </h2>
+            <p className="text-slate-600 italic text-lg border-l-4 border-amber-500 pl-4 py-2 bg-amber-500/5 rounded-r-xl">
+              "From him the whole body, joined and held together by every supporting ligament, 
+              grows and builds itself up in love, as each part does its work."
+              <span className="block font-bold mt-1 text-amber-700">— Ephesians 4:16</span>
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+            {[
+              { title: "Youth & Adult", icon: Users, link: "youth-and-adult" },
+              { title: "Teenagers", icon: UserCheck, link: "teenagers" },
+              { title: "Women Fellowship", icon: Heart, link: "women-fellowship" },
+              { title: "Men Fellowship", icon: Speaker, link: "men-fellowship" },
+            ].map((group, idx) => (
+              <a 
+                key={idx} 
+                href={`/fellowships/${group.link}`} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="group flex flex-col items-center p-8 bg-white rounded-3xl shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-transparent hover:border-amber-200 cursor-pointer"
+              >
+                <div className="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-amber-400 transition-colors">
+                  <group.icon className="h-8 w-8 text-amber-600 group-hover:text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 uppercase">{group.title}</h3>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* DECISION FORM */}
       <section className="py-16 bg-[#FFF4E1]">

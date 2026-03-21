@@ -1,7 +1,6 @@
 // src/components/Footer.jsx
 import { Link } from "react-router-dom";
 import {
-  Church,
   Mail,
   Phone,
   MapPin,
@@ -9,6 +8,8 @@ import {
   Instagram,
   Youtube,
 } from "lucide-react";
+
+const LOGO_URL = "https://www.rccg.org/wp-content/uploads/2020/11/rccg-for-web.png";
 
 const Footer = () => {
   const quickLinks = [
@@ -27,16 +28,20 @@ const Footer = () => {
           {/* Brand Section */}
           <div className="space-y-6">
             <div className="flex items-center gap-3">
-              <Church className="h-10 w-10 text-amber-400" />
+              <img
+                src={LOGO_URL}
+                alt="Lord's Heritage House Logo"
+                className="h-12 w-12 object-contain"
+              />
               <span className="font-serif text-2xl font-bold text-amber-400">
                 Lord's Heritage House
               </span>
             </div>
 
             <p className="text-gray-300 text-sm leading-relaxed max-w-xs">
-             Discover Your Purpose. Deepen Your Faith. Experience The Heritage. 
-             Join us this Sunday as we encounter
-              the presence of God and build a future rooted in His love
+              Discover Your Purpose. Deepen Your Faith. Experience The Heritage.
+              Join us this Sunday as we encounter the presence of God and build
+              a future rooted in His love.
             </p>
 
             {/* Social Links */}
@@ -92,14 +97,14 @@ const Footer = () => {
             <ul className="space-y-5 text-gray-300 text-sm">
               <li>
                 <span className="block font-medium text-white">Sunday Service</span>
-                9:00 AM 
+                8:00 AM
               </li>
               <li>
-                <span className="block font-medium text-white"> Bible Study</span>
-                 Tuesday 5:00 PM
+                <span className="block font-medium text-white">Bible Study</span>
+                Tuesday 5:00 PM
               </li>
               <li>
-                <span className="block font-medium text-white">Faith Clinic </span>
+                <span className="block font-medium text-white">Faith Clinic</span>
                 Thursday at 5:00 PM
               </li>
             </ul>
@@ -114,8 +119,8 @@ const Footer = () => {
               <li className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 text-amber-400 shrink-0 mt-0.5" />
                 <span>
-                   338, Sagamu Road,<br />
-                 Beside MRS Filling Station Opposite UBA Odogunyan Ikorodu-Lagos
+                  338, Sagamu Road,<br />
+                  Beside MRS Filling Station Opposite UBA Odogunyan Ikorodu-Lagos
                 </span>
               </li>
               <li className="flex items-center gap-3">
