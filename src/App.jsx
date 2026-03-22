@@ -33,7 +33,12 @@ import FellowshipPage from './pages/Fellowship';
 import Login from './pages/admin/Login';
 import Dashboard from './pages/admin/Dashboard';
 import PrivateAdminRoute from './pages/admin/PrivateAdminroute';
-import ResetPassword from './pages/ResetPassword'; // ← ADDED
+import ResetPassword from './pages/ResetPassword';
+
+// Super Admin pages
+import SuperAdminAuth from './pages/admin/SuperAdminAuth';
+import SuperAdminDashboard from './pages/admin/SuperAdminDashboard';
+import PrivateSuperAdminRoute from './pages/admin/SuperAdminRoute';
 
 function App() {
   return (
@@ -42,7 +47,7 @@ function App() {
         <Navbar />
         <main className="main-content">
           <Routes>
-            {/* Public routes */}
+            {/* ── Public routes ── */}
             <Route path="/" element={<Home />} />
             <Route path="/information" element={<AboutUs />}>
               <Route path="journey" element={<OurJourney />} />
@@ -68,16 +73,32 @@ function App() {
             <Route path="/giving" element={<Giving />} />
             <Route path="/fellowships/:type" element={<FellowshipPage />} />
 
-            {/* Admin routes */}
+            {/* ── Admin routes ── */}
+            {/* Public — no token needed to reach the login page */}
             <Route path="/Admin/login" element={<Login />} />
-            <Route path="/reset-password/:token" element={<ResetPassword />} /> {/* ← ADDED */}
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
 
+            {/* Protected — must have adminToken */}
             <Route
               path="/Admin/dashboard"
               element={
                 <PrivateAdminRoute>
                   <Dashboard />
                 </PrivateAdminRoute>
+              }
+            />
+
+            {/* ── Super Admin routes ── */}
+            {/* Public — no token needed to reach the super admin login page */}
+            <Route path="/superadmin/login" element={<SuperAdminAuth />} />
+
+            {/* Protected — must have superAdminToken */}
+            <Route
+              path="/superadmin/dashboard"
+              element={
+                <PrivateSuperAdminRoute>
+                  <SuperAdminDashboard />
+                </PrivateSuperAdminRoute>
               }
             />
           </Routes>

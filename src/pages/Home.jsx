@@ -70,9 +70,9 @@ const services = [
     ],
   },
   {
-    day: "Saturdays",
+    day: "Sundays",
     items: [
-      { name: "Women of Destiny Meeting", time: "12:00 PM", note: "3rd Saturday" },
+      { name: "Women of Destiny Meeting", time: "12:00 PM", note: "3rd Sunday" },
     ],
   },
 ];
