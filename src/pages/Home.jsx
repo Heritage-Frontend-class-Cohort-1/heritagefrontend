@@ -21,26 +21,26 @@ const colors = {
 };
 
 const dailyVerses = [
-  { v: "For I know the plans I have for you, declares the Lord.", r: "Jeremiah 29:11" },
-  { v: "I can do all things through him who strengthens me.", r: "Philippians 4:13" },
-  { v: "Trust in the Lord with all your heart.", r: "Proverbs 3:5" },
-  { v: "But they who wait for the Lord shall renew their strength.", r: "Isaiah 40:31" },
-  { v: "The Lord is my shepherd; I shall not want.", r: "Psalm 23:1" },
-  { v: "Be strong and courageous. Do not be frightened, for the Lord your God is with you.", r: "Joshua 1:9" },
-  { v: "Cast all your anxiety on him because he cares for you.", r: "1 Peter 5:7" },
-  { v: "And we know that in all things God works for the good of those who love him.", r: "Romans 8:28" },
-  { v: "The name of the Lord is a strong tower; the righteous run into it and are safe.", r: "Proverbs 18:10" },
-  { v: "Do not be anxious about anything, but in everything by prayer let your requests be made known to God.", r: "Philippians 4:6" },
-  { v: "God is our refuge and strength, a very present help in trouble.", r: "Psalm 46:1" },
-  { v: "The Lord will fight for you; you need only to be still.", r: "Exodus 14:14" },
-  { v: "Your word is a lamp to my feet and a light to my path.", r: "Psalm 119:105" },
-  { v: "For God has not given us a spirit of fear, but of power, love and a sound mind.", r: "2 Timothy 1:7" },
-  { v: "Give thanks to the Lord, for he is good; his love endures forever.", r: "1 Chronicles 16:34" },
-  { v: "Let everything that has breath praise the Lord.", r: "Psalm 150:6" },
-  { v: "He gives power to the weak and strength to the powerless.", r: "Isaiah 40:29" },
-  { v: "The joy of the Lord is your strength.", r: "Nehemiah 8:10" },
-  { v: "Ask and it will be given to you; seek and you will find.", r: "Matthew 7:7" },
-  { v: "I will praise you, for I am fearfully and wonderfully made.", r: "Psalm 139:14" }
+  { v: "But seek first the kingdom of God and his righteousness, and all these things will be added to you.", r: "Matthew 6:33" },
+  { v: "The Lord is my light and my salvation; whom shall I fear?", r: "Psalm 27:1" },
+  { v: "My grace is sufficient for you, for my power is made perfect in weakness.", r: "2 Corinthians 12:9" },
+  { v: "The steadfast love of the Lord never ceases; his mercies never come to an end.", r: "Lamentations 3:22" },
+  { v: "They are new every morning; great is your faithfulness.", r: "Lamentations 3:23" },
+  { v: "Let us not become weary in doing good, for at the proper time we will reap a harvest.", r: "Galatians 6:9" },
+  { v: "For I am convinced that neither death nor life can separate us from the love of God.", r: "Romans 8:38-39" },
+  { v: "Above all else, guard your heart, for everything you do flows from it.", r: "Proverbs 4:23" },
+  { v: "Commit your way to the Lord; trust in him and he will do this.", r: "Psalm 37:5" },
+  { v: "Taste and see that the Lord is good; blessed is the one who takes refuge in him.", r: "Psalm 34:8" },
+  { v: "The Lord is close to the brokenhearted and saves those who are crushed in spirit.", r: "Psalm 34:18" },
+  { v: "Peace I leave with you; my peace I give you. Do not let your hearts be troubled.", r: "John 14:27" },
+  { v: "Great is our Lord and mighty in power; his understanding has no limit.", r: "Psalm 147:5" },
+  { v: "In the same way, let your light shine before others, that they may see your good deeds.", r: "Matthew 5:16" },
+  { v: "Being confident of this, that he who began a good work in you will carry it on to completion.", r: "Philippians 1:6" },
+  { v: "Come to me, all you who are weary and burdened, and I will give you rest.", r: "Matthew 11:28" },
+  { v: "Set your minds on things above, not on earthly things.", r: "Colossians 3:2" },
+  { v: "If God is for us, who can be against us?", r: "Romans 8:31" },
+  { v: "The Lord will guide you always; he will satisfy your needs in a sun-scorched land.", r: "Isaiah 58:11" },
+  { v: "Whatever you do, work at it with all your heart, as working for the Lord.", r: "Colossians 3:23" }
 ];
 
 const services = [
@@ -110,7 +110,7 @@ const Home = () => {
     { title: "Giving", path: "/giving", icon: Gift },
     { title: "Prayer Request", path: "/explore-heritage/prayer-request", icon: MessageSquare },
     { title: "Counselling", path: "/explore-heritage/counselling", icon: Users },
-    { title: "Our Leadership", path: "/who-we-are/leadership", icon: UserCheck },
+    { title: "Our Leadership", path: "/information/leadership", icon: UserCheck },
   ];
 
   const [formData, setFormData] = useState({ firstName: "", lastName: "", phone: "", prayerRequest: "" });

@@ -40,6 +40,8 @@ import SuperAdminAuth from './pages/admin/SuperAdminAuth';
 import SuperAdminDashboard from './pages/admin/SuperAdminDashboard';
 import PrivateSuperAdminRoute from './pages/admin/SuperAdminRoute';
 
+// attendance page
+import AttendancePage from "./pages/AttendacePage";
 function App() {
   return (
     <BrowserRouter>
@@ -72,6 +74,8 @@ function App() {
             <Route path="/icare" element={<Icare />} />
             <Route path="/giving" element={<Giving />} />
             <Route path="/fellowships/:type" element={<FellowshipPage />} />
+
+            <Route path="/attendance" element={<AttendancePage />} />
 
             {/* ── Admin routes ── */}
             {/* Public — no token needed to reach the login page */}
