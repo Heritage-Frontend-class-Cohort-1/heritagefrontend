@@ -1,6 +1,25 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import axios from "axios";
 import Broadcast from "./Broadcast";
+
+/* ─── Decode JWT without a library ─── */
+const decodeToken = (token) => {
+  try { return JSON.parse(atob(token.split(".")[1])); } catch { return null; }
+};
+
+const getAdminInfo = () => {
+  const token = localStorage.getItem("authToken") || localStorage.getItem("token") || localStorage.getItem("adminToken");
+  if (!token) return { name: "Admin", role: "Admin", initials: "AD" };
+  const decoded = decodeToken(token);
+  if (!decoded) return { name: "Admin", role: "Admin", initials: "AD" };
+  const firstName = decoded.name || decoded.firstName || "";
+  const lastName = decoded.lastName || "";
+  const name = (firstName + " " + lastName).trim() || decoded.email?.split("@")[0] || "Admin";
+  const role = decoded.role === "superadmin" ? "Super Admin" : decoded.role === "admin" ? "Admin" : decoded.role || "Admin";
+  const parts = name.split(" ");
+  const initials = parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.slice(0, 2).toUpperCase();
+  return { name, role, initials };
+};
 
 const colors = {
   deepNavy: "#0B1B3F",
@@ -551,10 +570,14 @@ const AttendanceHistory = ({ totalMembers, refreshKey }) => {
 ───────────────────────────────────────── */
 const AdminDashboard = () => {
   const [members, setMembers]         = useState([]);
+  const [adminInfo]                   = useState(() => getAdminInfo());
+  const [showNotif, setShowNotif]     = useState(false);
+  const notifRef                      = useRef(null);
   const [prayers, setPrayers]         = useState([]);
   const [testimonies, setTestimonies] = useState([]);
   const [birthdays, setBirthdays]     = useState([]);
   const [contacts, setContacts]       = useState([]);
+  const [counsellings, setCounsellings] = useState([]);   // ← NEW
   const [loading, setLoading]         = useState(true);
   const [sendingStates, setSendingStates]   = useState({});
   const [deletingStates, setDeletingStates] = useState({});
@@ -571,6 +594,7 @@ const AdminDashboard = () => {
   const [searchTerm, setSearchTerm]       = useState("");
   const [ftStageFilter, setFtStageFilter] = useState("all");
   const [ftActionLoading, setFtActionLoading] = useState({});
+  const [counsellingFilter, setCounsellingFilter] = useState("all");  // ← NEW
 
   useEffect(() => { fetchData(); }, []);
   useEffect(() => {
@@ -594,6 +618,15 @@ const AdminDashboard = () => {
       setContacts(contactsRes.data.data || []);
     } catch (err) { console.error("fetchData error:", err); }
     finally { setLoading(false); }
+
+    // Counselling fetched separately so it never breaks the main dashboard
+    try {
+      const token = localStorage.getItem("authToken") || localStorage.getItem("token") || localStorage.getItem("adminToken");
+      const counsellingsRes = await axios.get(`${API_URL}/api/counselling`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      setCounsellings(counsellingsRes.data.data || counsellingsRes.data || []);
+    } catch (err) { console.error("counselling fetch error:", err); }
   };
 
   const submitAttendance = async () => {
@@ -607,9 +640,11 @@ const AdminDashboard = () => {
 
     setSubmittingAttendance(true);
     try {
+      const token = localStorage.getItem("authToken") || localStorage.getItem("token") || localStorage.getItem("adminToken");
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
       await axios.post(`${API_URL}/api/attendance/mark`, {
         presentMembers, absentMembers, message: attendanceMessage, serviceType, serviceDate
-      });
+      }, { headers });
       setToast(`✅ Attendance saved! ${presentMembers.length} present, ${absentMembers.length} absent.`);
       setAttendance({});
       await fetchData();
@@ -706,12 +741,39 @@ const AdminDashboard = () => {
     finally { setDeletingStates(p => ({ ...p, [id]: false })); }
   };
 
-  if (loading) return <LoadingScreen />;
+  // ─── NEW: Counselling actions ───
+  const updateCounsellingStatus = async (id, status) => {
+    try {
+      const token = localStorage.getItem("authToken") || localStorage.getItem("token") || localStorage.getItem("adminToken");
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      await axios.put(`${API_URL}/api/counselling/${id}/status`, { status }, { headers });
+      setToast(`✅ Booking marked as ${status}`);
+      fetchData();
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to update status");
+    }
+  };
+
+  const deleteCounselling = async (id) => {
+    if (!window.confirm("Delete this booking? This cannot be undone.")) return;
+    setDeletingStates(p => ({ ...p, [id]: true }));
+    try {
+      const token = localStorage.getItem("authToken") || localStorage.getItem("token") || localStorage.getItem("adminToken");
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      await axios.delete(`${API_URL}/api/counselling/${id}`, { headers });
+      setToast("✅ Booking deleted!");
+      fetchData();
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to delete booking");
+    } finally { setDeletingStates(p => ({ ...p, [id]: false })); }
+  };
 
   const filtered       = members.filter(m => `${m.firstName} ${m.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()));
   const firstTimers    = members.filter(m => m.category === "First Timer");
   const newConverts    = members.filter(m => m.category === "New Convert");
   const regularMembers = members.filter(m => m.category === "Member");
+
+  if (loading) return <LoadingScreen />;
   const presentCount   = Object.values(attendance).filter(Boolean).length;
 
   const ftGroups = {
@@ -726,6 +788,22 @@ const AdminDashboard = () => {
     `${m.firstName} ${m.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // ─── NEW: Counselling filters ───
+  const counsellingFiltered = counsellings.filter(c => {
+    const matchesSearch = c.name?.toLowerCase().includes(searchTerm.toLowerCase()) || c.phone?.includes(searchTerm);
+    const matchesType = counsellingFilter === "all" || c.sessionType === counsellingFilter;
+    return matchesSearch && matchesType;
+  });
+  const onlineCount   = counsellings.filter(c => c.sessionType === "Online").length;
+  const physicalCount = counsellings.filter(c => c.sessionType === "Physical").length;
+
+  const STATUS_CONFIG = {
+    Pending:   { label: "Pending",   bg: "#FFFBEB", color: "#92400E", border: "#FDE68A" },
+    Confirmed: { label: "Confirmed", bg: "#EFF6FF", color: "#1E40AF", border: "#BFDBFE" },
+    Completed: { label: "Completed", bg: "#F0FDF4", color: "#15803D", border: "#86EFAC" },
+    Cancelled: { label: "Cancelled", bg: "#FEF2F2", color: "#B91C1C", border: "#FCA5A5" },
+  };
+
   const tabs = [
     { id: "attendance",  label: "Mark Attendance",   icon: "📋" },
     { id: "history",     label: "Attendance History", icon: "📊" },
@@ -736,6 +814,7 @@ const AdminDashboard = () => {
     { id: "testimonies", label: "Testimonies",        icon: "💬" },
     { id: "birthdays",   label: "Birthdays",          icon: "🎂" },
     { id: "contacts",    label: "Messages",           icon: "✉️" },
+    { id: "counselling", label: "Counselling",        icon: "🕊️" },   // ← NEW
     { id: "broadcast",   label: "Broadcast",          icon: "📣" },
   ];
 
@@ -743,16 +822,109 @@ const AdminDashboard = () => {
     <div style={{ minHeight: "100vh", background: colors.soft, fontFamily: "'Segoe UI', sans-serif" }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}} @keyframes slideIn{from{transform:translateX(60px);opacity:0}to{transform:none;opacity:1}} *{box-sizing:border-box}`}</style>
 
-      <nav style={{ position: "sticky", top: 0, zIndex: 100, background: colors.deepNavy, boxShadow: "0 2px 20px rgba(11,27,63,0.25)", padding: "0 24px" }}>
-        <div style={{ maxWidth: 1340, margin: "0 auto", height: 62, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontSize: 22 }}>⛪</span>
-            <span style={{ color: "#fff", fontWeight: 800, fontSize: 18, fontFamily: "'Georgia', serif", letterSpacing: 0.5 }}>Lords Heritage Admin</span>
+      <nav style={{ position: "sticky", top: 0, zIndex: 100, background: colors.deepNavy, boxShadow: "0 4px 24px rgba(11,27,63,0.35)", padding: "0 28px", borderBottom: "1px solid rgba(255,215,0,0.1)" }}>
+        <div style={{ maxWidth: 1340, margin: "0 auto", height: 68, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
+
+          {/* ── Left: Logo + Title ── */}
+          <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
+            <div style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(255,215,0,0.12)", border: "1.5px solid rgba(255,215,0,0.25)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>
+              ⛪
+            </div>
+            <div>
+              <div style={{ color: "#fff", fontWeight: 800, fontSize: 16, fontFamily: "'Georgia', serif", letterSpacing: 0.3, lineHeight: 1.1 }}>Lords Heritage</div>
+              <div style={{ color: colors.gold, fontWeight: 600, fontSize: 10, letterSpacing: 1.5, textTransform: "uppercase", opacity: 0.85 }}>Admin Portal</div>
+            </div>
           </div>
-          <button onClick={() => { localStorage.removeItem("authToken"); window.location.href = "/login"; }}
-            style={{ background: "rgba(255,215,0,0.12)", color: colors.gold, border: "1.5px solid rgba(255,215,0,0.3)", borderRadius: 8, padding: "6px 18px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
-            Logout
-          </button>
+
+          {/* ── Center: subtle divider line ── */}
+          <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.06)", maxWidth: 200, display: "none" }} />
+
+          {/* ── Right: Notif + Admin Info + Logout ── */}
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+
+            {/* Notification Bell */}
+            <div style={{ position: "relative" }} ref={notifRef}>
+              <button
+                onClick={() => setShowNotif(p => !p)}
+                style={{ width: 38, height: 38, borderRadius: 10, background: "rgba(255,255,255,0.06)", border: "1.5px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", position: "relative", transition: "background 0.2s" }}
+                onMouseEnter={e => e.currentTarget.style.background = "rgba(255,215,0,0.12)"}
+                onMouseLeave={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"}
+              >
+                <span style={{ fontSize: 16 }}>🔔</span>
+                {/* Red dot */}
+                <span style={{ position: "absolute", top: 6, right: 6, width: 8, height: 8, borderRadius: "50%", background: "#EF4444", border: "2px solid " + colors.deepNavy }} />
+              </button>
+              {showNotif && (
+                <div style={{ position: "absolute", top: 48, right: 0, width: 280, background: "#fff", borderRadius: 14, boxShadow: "0 12px 40px rgba(0,0,0,0.18)", border: "1.5px solid #e8eaf0", overflow: "hidden", zIndex: 200 }}>
+                  <div style={{ padding: "14px 18px", borderBottom: "1px solid #f1f5f9", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ fontWeight: 800, fontSize: 14, color: colors.deepNavy }}>Notifications</span>
+                    <span style={{ fontSize: 11, color: "#94a3b8", fontWeight: 600 }}>Today</span>
+                  </div>
+                  <div style={{ padding: "10px 0" }}>
+                    {birthdays.length > 0 ? (
+                      <div style={{ padding: "10px 18px", display: "flex", gap: 10, alignItems: "flex-start" }}>
+                        <span style={{ fontSize: 20, flexShrink: 0 }}>🎂</span>
+                        <div>
+                          <div style={{ fontWeight: 700, fontSize: 13, color: colors.deepNavy }}>{birthdays.length} upcoming birthday{birthdays.length > 1 ? "s" : ""}</div>
+                          <div style={{ fontSize: 12, color: "#64748b", marginTop: 2 }}>Don't forget to send greetings!</div>
+                        </div>
+                      </div>
+                    ) : null}
+                    {firstTimers.filter(m => daysSince(m.firstVisitDate || m.createdAt) >= 14 && !["returned","converted"].includes(m.followUpStage)).length > 0 ? (
+                      <div style={{ padding: "10px 18px", display: "flex", gap: 10, alignItems: "flex-start" }}>
+                        <span style={{ fontSize: 20, flexShrink: 0 }}>⚠️</span>
+                        <div>
+                          <div style={{ fontWeight: 700, fontSize: 13, color: "#B91C1C" }}>{firstTimers.filter(m => daysSince(m.firstVisitDate || m.createdAt) >= 14 && !["returned","converted"].includes(m.followUpStage)).length} overdue follow-up{firstTimers.filter(m => daysSince(m.firstVisitDate || m.createdAt) >= 14).length > 1 ? "s" : ""}</div>
+                          <div style={{ fontSize: 12, color: "#64748b", marginTop: 2 }}>First timers need attention</div>
+                        </div>
+                      </div>
+                    ) : null}
+                    {counsellings.filter(c => c.status === "Pending").length > 0 ? (
+                      <div style={{ padding: "10px 18px", display: "flex", gap: 10, alignItems: "flex-start" }}>
+                        <span style={{ fontSize: 20, flexShrink: 0 }}>🕊️</span>
+                        <div>
+                          <div style={{ fontWeight: 700, fontSize: 13, color: "#1E40AF" }}>{counsellings.filter(c => c.status === "Pending").length} pending counselling session{counsellings.filter(c => c.status === "Pending").length > 1 ? "s" : ""}</div>
+                          <div style={{ fontSize: 12, color: "#64748b", marginTop: 2 }}>Awaiting confirmation</div>
+                        </div>
+                      </div>
+                    ) : null}
+                    {birthdays.length === 0 && counsellings.filter(c => c.status === "Pending").length === 0 && firstTimers.filter(m => daysSince(m.firstVisitDate || m.createdAt) >= 14 && !["returned","converted"].includes(m.followUpStage)).length === 0 && (
+                      <div style={{ padding: "20px 18px", textAlign: "center", color: "#94a3b8", fontSize: 13 }}>✅ All caught up!</div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Divider */}
+            <div style={{ width: 1, height: 32, background: "rgba(255,255,255,0.1)" }} />
+
+            {/* Admin avatar + name + role */}
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div style={{ width: 38, height: 38, borderRadius: 10, background: `linear-gradient(135deg, ${colors.gold} 0%, ${colors.gold2} 100%)`, color: colors.deepNavy, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 14, flexShrink: 0, letterSpacing: 0.5 }}>
+                {adminInfo.initials}
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <div style={{ color: "#fff", fontWeight: 700, fontSize: 13, lineHeight: 1 }}>{adminInfo.name}</div>
+                <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 20, background: "rgba(255,215,0,0.15)", color: colors.gold, border: "1px solid rgba(255,215,0,0.25)", letterSpacing: 0.5, textTransform: "uppercase", lineHeight: 1.6 }}>
+                  {adminInfo.role}
+                </span>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div style={{ width: 1, height: 32, background: "rgba(255,255,255,0.1)" }} />
+
+            {/* Logout */}
+            <button
+              onClick={() => { localStorage.removeItem("authToken"); localStorage.removeItem("token"); localStorage.removeItem("adminToken"); window.location.href = "/Admin/login"; }}
+              style={{ display: "flex", alignItems: "center", gap: 7, background: "rgba(239,68,68,0.1)", color: "#FCA5A5", border: "1.5px solid rgba(239,68,68,0.2)", borderRadius: 9, padding: "7px 14px", fontWeight: 700, fontSize: 12, cursor: "pointer", transition: "all 0.2s", letterSpacing: 0.3 }}
+              onMouseEnter={e => { e.currentTarget.style.background = "rgba(239,68,68,0.22)"; e.currentTarget.style.color = "#fff"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "rgba(239,68,68,0.1)"; e.currentTarget.style.color = "#FCA5A5"; }}
+            >
+              <span style={{ fontSize: 14 }}>→</span> Logout
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -778,7 +950,7 @@ const AdminDashboard = () => {
         {/* TABS */}
         <div style={{ display: "flex", gap: 6, marginBottom: 24, overflowX: "auto", paddingBottom: 4 }}>
           {tabs.map(tab => (
-            <button key={tab.id} onClick={() => { setActiveTab(tab.id); setSearchTerm(""); setFtStageFilter("all"); }}
+            <button key={tab.id} onClick={() => { setActiveTab(tab.id); setSearchTerm(""); setFtStageFilter("all"); setCounsellingFilter("all"); }}
               style={{ padding: "9px 16px", borderRadius: 9, fontWeight: 700, fontSize: 13, border: "none", cursor: "pointer", whiteSpace: "nowrap", background: activeTab === tab.id ? colors.deepNavy : "#fff", color: activeTab === tab.id ? colors.gold : "#475569", boxShadow: activeTab === tab.id ? "0 4px 14px rgba(11,27,63,0.2)" : "0 1px 4px rgba(0,0,0,0.07)", transition: "all 0.18s" }}>
               {tab.icon} {tab.label}
             </button>
@@ -1030,6 +1202,120 @@ const AdminDashboard = () => {
           </div>
         )}
 
+        {/* ─── COUNSELLING TAB ─── */}
+        {activeTab === "counselling" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+
+            {/* Summary cards */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 14 }}>
+              {[
+                { key: "all",      label: "All Bookings", value: counsellings.length,     color: colors.deepNavy, bg: "#EEF2FF" },
+                { key: "Online",   label: "🖥️ Online",    value: onlineCount,             color: "#1E40AF",       bg: "#EFF6FF" },
+                { key: "Physical", label: "🏛️ Physical",  value: physicalCount,           color: "#065F46",       bg: "#ECFDF5" },
+              ].map(f => (
+                <button key={f.key} onClick={() => setCounsellingFilter(f.key)}
+                  style={{ padding: "16px 12px", borderRadius: 12, border: `2px solid ${counsellingFilter === f.key ? f.color : "transparent"}`, background: counsellingFilter === f.key ? f.bg : "#fff", cursor: "pointer", textAlign: "center", transition: "all 0.15s", boxShadow: "0 1px 4px rgba(0,0,0,0.07)" }}>
+                  <div style={{ fontSize: 26, fontWeight: 800, color: f.color }}>{f.value}</div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: f.color, marginTop: 3 }}>{f.label}</div>
+                </button>
+              ))}
+            </div>
+
+            {/* Bookings list */}
+            <div style={{ background: "#fff", borderRadius: 16, padding: 28, border: "1.5px solid #e8eaf0", boxShadow: "0 2px 12px rgba(11,27,63,0.06)" }}>
+              <SectionHeader
+                title="🕊️ Counselling Bookings"
+                count={counsellingFiltered.length}
+                subtitle="Manage all session requests from the website"
+              />
+              <SearchInput value={searchTerm} onChange={setSearchTerm} placeholder="Search by name or phone…" />
+
+              {counsellingFiltered.length === 0 ? (
+                <div style={{ textAlign: "center", padding: "48px 0", color: "#94a3b8" }}>
+                  <div style={{ fontSize: 40, marginBottom: 12 }}>🕊️</div>
+                  <div style={{ fontWeight: 700, fontSize: 15 }}>
+                    {counsellings.length === 0 ? "No bookings yet" : "No bookings match this filter"}
+                  </div>
+                </div>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                  {counsellingFiltered.map(c => {
+                    const statusCfg = STATUS_CONFIG[c.status] || STATUS_CONFIG.pending;
+                    const isOnline = c.sessionType === "Online";
+                    return (
+                      <div key={c._id} style={{ padding: "18px 22px", borderRadius: 14, border: "1.5px solid #e8eaf0", background: "#fafafa", display: "flex", flexDirection: "column", gap: 12 }}>
+
+                        {/* Top row */}
+                        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                              <div style={{ fontWeight: 800, fontSize: 16, color: colors.deepNavy }}>{c.name}</div>
+                              {/* Session type badge */}
+                              <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 20, background: isOnline ? "#EFF6FF" : "#ECFDF5", color: isOnline ? "#1E40AF" : "#065F46", border: `1px solid ${isOnline ? "#BFDBFE" : "#A7F3D0"}` }}>
+                                {isOnline ? "🖥️ Online" : "🏛️ Physical"}
+                              </span>
+                              {/* Status badge */}
+                              <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 20, background: statusCfg.bg, color: statusCfg.color, border: `1px solid ${statusCfg.border}` }}>
+                                {statusCfg.label}
+                              </span>
+                            </div>
+                            <div style={{ fontSize: 12, color: "#64748b", marginTop: 5, display: "flex", gap: 14, flexWrap: "wrap" }}>
+                              {c.phone && <span>📱 {c.phone}</span>}
+                              {c.email && <span>✉️ {c.email}</span>}
+                              {c.date && (
+                                <span>📅 {new Date(c.date).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" })}</span>
+                              )}
+                              {c.createdAt && (
+                                <span style={{ color: "#94a3b8" }}>Submitted: {new Date(c.createdAt).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" })}</span>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Delete button */}
+                          <button onClick={() => deleteCounselling(c._id)} disabled={deletingStates[c._id]}
+                            style={{ padding: "7px 13px", borderRadius: 8, border: "none", background: deletingStates[c._id] ? "#e2e8f0" : "#FEF2F2", color: deletingStates[c._id] ? "#94a3b8" : "#DC2626", fontWeight: 700, fontSize: 12, cursor: deletingStates[c._id] ? "not-allowed" : "pointer", display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                            {deletingStates[c._id] ? <><Spinner size={12} color="#94a3b8" /><span>Deleting…</span></> : "🗑 Delete"}
+                          </button>
+                        </div>
+
+                        {/* Message / concern */}
+                        {c.message && (
+                          <div style={{ padding: "10px 14px", background: "#fff", borderRadius: 10, border: "1.5px solid #e8eaf0", fontSize: 13, color: "#475569", lineHeight: 1.7, fontStyle: "italic" }}>
+                            💬 {c.message}
+                          </div>
+                        )}
+
+                        {/* Status action buttons */}
+                        {c.status !== "Cancelled" && (
+                          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                            {c.status !== "Confirmed" && c.status !== "Completed" && (
+                              <button onClick={() => updateCounsellingStatus(c._id, "Confirmed")}
+                                style={{ padding: "7px 16px", borderRadius: 8, border: "none", background: "#EFF6FF", color: "#1E40AF", fontWeight: 700, fontSize: 12, cursor: "pointer", border: "1px solid #BFDBFE" }}>
+                                ✅ Confirm
+                              </button>
+                            )}
+                            {c.status !== "Completed" && (
+                              <button onClick={() => updateCounsellingStatus(c._id, "Completed")}
+                                style={{ padding: "7px 16px", borderRadius: 8, border: "none", background: "#F0FDF4", color: "#15803D", fontWeight: 700, fontSize: 12, cursor: "pointer", border: "1px solid #86EFAC" }}>
+                                🎉 Mark Done
+                              </button>
+                            )}
+                            <button onClick={() => updateCounsellingStatus(c._id, "Cancelled")}
+                              style={{ padding: "7px 16px", borderRadius: 8, border: "none", background: "#FEF2F2", color: "#B91C1C", fontWeight: 700, fontSize: 12, cursor: "pointer", border: "1px solid #FCA5A5" }}>
+                              ✕ Cancel
+                            </button>
+                          </div>
+                        )}
+
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* BROADCAST */}
         {activeTab === "broadcast" && (
           <Broadcast
@@ -1045,12 +1331,6 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
-
-
-
-
-
-
 
 
 

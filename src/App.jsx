@@ -1,6 +1,6 @@
 // src/App.jsx
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 
 // Navbar and Footer
 import Navbar from "./components/Navbar"; 
@@ -40,88 +40,92 @@ import SuperAdminAuth from './pages/admin/SuperAdminAuth';
 import SuperAdminDashboard from './pages/admin/SuperAdminDashboard';
 import PrivateSuperAdminRoute from './pages/admin/SuperAdminRoute';
 
-// attendance page
+// Attendance page
 import AttendancePage from "./pages/AttendacePage";
+
+// Routes where Navbar + Footer should NOT appear
+const BARE_ROUTES = [
+  "/admin/dashboard",
+  "/admin/login",
+  "/superadmin/dashboard",
+  "/superadmin/login",
+  "/attendance",
+];
+
+const Layout = ({ children }) => {
+  const { pathname } = useLocation();
+  const isBare = BARE_ROUTES.some(r => pathname.toLowerCase().startsWith(r));
+
+  return (
+    <div className="app-wrapper">
+      {!isBare && <Navbar />}
+      <main className="main-content">
+        {children}
+      </main>
+      {!isBare && <Footer />}
+    </div>
+  );
+};
+
 function App() {
   return (
     <BrowserRouter>
-      <div className="app-wrapper">
-        <Navbar />
-        <main className="main-content">
-          <Routes>
-            {/* ── Public routes ── */}
-            <Route path="/" element={<Home />} />
-            <Route path="/information" element={<AboutUs />}>
-              <Route path="journey" element={<OurJourney />} />
-              <Route path="heritage-in-number" element={<HeritageInNumber/>} />
-              <Route path="leadership" element={<OurLeadership />} />
-              <Route path="believe" element={<WhatWeBelieve />} />
-              <Route path="mission-vision" element={<MissionVision />} />
-            </Route>
+      <Layout>
+        <Routes>
+          {/* ── Public routes ── */}
+          <Route path="/" element={<Home />} />
+          <Route path="/information" element={<AboutUs />}>
+            <Route path="journey" element={<OurJourney />} />
+            <Route path="heritage-in-number" element={<HeritageInNumber/>} />
+            <Route path="leadership" element={<OurLeadership />} />
+            <Route path="believe" element={<WhatWeBelieve />} />
+            <Route path="mission-vision" element={<MissionVision />} />
+          </Route>
 
-            <Route path="/sermons" element={<Sermons />} />
-            <Route path="/live-service" element={<LiveService />} />
-            <Route path="/explore-heritage" element={<ExploreHeritage />}>
-              <Route path="am-new-here" element={<AmNewHere />} />
-              <Route path="testimony" element={<Testimony />} />
-              <Route path="contact-us" element={<ContactUs />} />
-              <Route path="prayer-request" element={<PrayerRequest />} />
-              <Route path="birthday" element={<Birthday />} />
-              <Route path="update-profile" element={<UpdateProfilePage />} />
-              <Route path="counselling" element={<Counselling />} />
-            </Route>
+          <Route path="/sermons" element={<Sermons />} />
+          <Route path="/live-service" element={<LiveService />} />
+          <Route path="/explore-heritage" element={<ExploreHeritage />}>
+            <Route path="am-new-here" element={<AmNewHere />} />
+            <Route path="testimony" element={<Testimony />} />
+            <Route path="contact-us" element={<ContactUs />} />
+            <Route path="prayer-request" element={<PrayerRequest />} />
+            <Route path="birthday" element={<Birthday />} />
+            <Route path="update-profile" element={<UpdateProfilePage />} />
+            <Route path="counselling" element={<Counselling />} />
+          </Route>
 
-            <Route path="/icare" element={<Icare />} />
-            <Route path="/giving" element={<Giving />} />
-            <Route path="/fellowships/:type" element={<FellowshipPage />} />
+          <Route path="/icare" element={<Icare />} />
+          <Route path="/giving" element={<Giving />} />
+          <Route path="/fellowships/:type" element={<FellowshipPage />} />
 
-            <Route path="/attendance" element={<AttendancePage />} />
+          <Route path="/attendance" element={<AttendancePage />} />
 
-            {/* ── Admin routes ── */}
-            {/* Public — no token needed to reach the login page */}
-            <Route path="/Admin/login" element={<Login />} />
-            <Route path="/reset-password/:token" element={<ResetPassword />} />
+          {/* ── Admin routes ── */}
+          <Route path="/Admin/login" element={<Login />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route
+            path="/Admin/dashboard"
+            element={
+              <PrivateAdminRoute>
+                <Dashboard />
+              </PrivateAdminRoute>
+            }
+          />
 
-            {/* Protected — must have adminToken */}
-            <Route
-              path="/Admin/dashboard"
-              element={
-                <PrivateAdminRoute>
-                  <Dashboard />
-                </PrivateAdminRoute>
-              }
-            />
-
-            {/* ── Super Admin routes ── */}
-            {/* Public — no token needed to reach the super admin login page */}
-            <Route path="/superadmin/login" element={<SuperAdminAuth />} />
-
-            {/* Protected — must have superAdminToken */}
-            <Route
-              path="/superadmin/dashboard"
-              element={
-                <PrivateSuperAdminRoute>
-                  <SuperAdminDashboard />
-                </PrivateSuperAdminRoute>
-              }
-            />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
+          {/* ── Super Admin routes ── */}
+          <Route path="/superadmin/login" element={<SuperAdminAuth />} />
+          <Route
+            path="/superadmin/dashboard"
+            element={
+              <PrivateSuperAdminRoute>
+                <SuperAdminDashboard />
+              </PrivateSuperAdminRoute>
+            }
+          />
+        </Routes>
+      </Layout>
     </BrowserRouter>
   );
 }
 
 export default App;
-
-
-
-
-
-
-// import Dashboard from "./Dashboard";
-
-// const App = () => <Dashboard />;
-
-// export default App;

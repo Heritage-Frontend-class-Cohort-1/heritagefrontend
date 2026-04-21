@@ -6,11 +6,13 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 
 // Assets
-import heroImage from "../assets/heroImage.jpg";
+// import heroImage from "../assets/heroImage.jpg";
 import year2026 from "../assets/year2026.jpg";
-import pic001 from "../assets/pic001.jpeg";
-import pic002 from "../assets/pic002.jpeg";
+// import pic001 from "../assets/pic001.jpeg";
+// import pic002 from "../assets/pic002.jpeg";
 import pic003 from "../assets/pic003.jpeg";
+import VIEW2 from "../assets/VIEW2.jpg.jpeg";
+import VIEW3 from "../assets/VIEW3.jpg.jpeg";
 
 const colors = {
   deepNavy: "#0B1B3F",
@@ -78,7 +80,7 @@ const services = [
 ];
 
 const Home = () => {
-  const heroImages = [heroImage, pic001, pic002, pic003];
+  const heroImages = [VIEW2, VIEW3, pic003];
   const [currentImage, setCurrentImage] = useState(0);
   const [showContent, setShowContent] = useState(false);
   const [typedText, setTypedText] = useState("");
