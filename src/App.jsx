@@ -1,6 +1,6 @@
 // src/App.jsx
 import React from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 // Navbar and Footer
 import Navbar from "./components/Navbar"; 
@@ -43,26 +43,14 @@ import PrivateSuperAdminRoute from './pages/admin/SuperAdminRoute';
 // Attendance page
 import AttendancePage from "./pages/AttendacePage";
 
-// Routes where Navbar + Footer should NOT appear
-const BARE_ROUTES = [
-  "/admin/dashboard",
-  "/admin/login",
-  "/superadmin/dashboard",
-  "/superadmin/login",
-  "/attendance",
-];
-
 const Layout = ({ children }) => {
-  const { pathname } = useLocation();
-  const isBare = BARE_ROUTES.some(r => pathname.toLowerCase().startsWith(r));
-
   return (
     <div className="app-wrapper">
-      {!isBare && <Navbar />}
+      <Navbar />
       <main className="main-content">
         {children}
       </main>
-      {!isBare && <Footer />}
+      <Footer />
     </div>
   );
 };

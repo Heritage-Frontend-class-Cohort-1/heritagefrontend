@@ -165,16 +165,15 @@ export default function AttendancePage() {
     <>
       <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet" />
       <style>{`
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
-        input[type=date]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
-        select option { background: #0d1f3c; }
-        .hov:hover { opacity: 0.8; }
-        .tab-btn { transition: all 0.2s; }
-        .tab-btn:hover { border-color: #c9a84c !important; color: #c9a84c !important; }
-      `}</style>
+  .attendance-page input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .attendance-page input[type=date]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
+  .attendance-page select option { background: #0d1f3c; }
+  .hov:hover { opacity: 0.8; }
+  .tab-btn { transition: all 0.2s; }
+  .tab-btn:hover { border-color: #c9a84c !important; color: #c9a84c !important; }
+`}</style>
 
-      <div style={{ minHeight:"100vh", background:"linear-gradient(160deg,#060e1f 0%,#0d1f3c 60%,#091529 100%)", fontFamily:"'Lora',serif", color:"#e8d5a3", paddingBottom:60 }}>
+      <div className="attendance-page" style={{ minHeight:"100vh", background:"linear-gradient(160deg,#060e1f 0%,#0d1f3c 60%,#091529 100%)", fontFamily:"'Lora',serif", color:"#e8d5a3", paddingBottom:60 }}>
 
         {/* Hero */}
         <div style={{ textAlign:"center", padding:"100px 24px 28px", borderBottom:"1px solid rgba(201,168,76,0.2)", position:"relative", overflow:"hidden" }}>
