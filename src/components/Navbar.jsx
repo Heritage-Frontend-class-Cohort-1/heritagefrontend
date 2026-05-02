@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ChevronDown } from "lucide-react";
+import { motion } from "framer-motion";
 
-const LOGO_URL = "https://www.rccg.org/wp-content/uploads/2020/11/rccg-for-web.png";
+const LOGO_URL = "https://rccgworld.org/rccg/assets/images/logos/rccg_logo.png";
 
 const navLinks = [
   { name: "Home", path: "/" },
-  { 
-    name: "Information", 
+  {
+    name: "Information",
     path: "/information",
     children: [
       { name: "Our Journey", path: "/information/journey" },
@@ -19,8 +20,8 @@ const navLinks = [
   },
   { name: "Sermons", path: "/sermons" },
   { name: "icare", path: "/icare" },
-  { 
-    name: "Explore Heritage", 
+  {
+    name: "Explore Heritage",
     path: "/explore-heritage",
     children: [
       { name: "I'm New Here", path: "/explore-heritage/am-new-here" },
@@ -33,6 +34,17 @@ const navLinks = [
   },
   { name: "Giving", path: "/giving" },
 ];
+
+const logoVariants = {
+  animate: {
+    x: [-6, 6, -6],
+    transition: {
+      duration: 2.5,
+      repeat: Infinity,
+      ease: "easeInOut",
+    },
+  },
+};
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -60,22 +72,42 @@ const Navbar = () => {
   };
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur border-b border-gray-200/30 transition-all duration-300 ${scrolled ? "shadow-md" : ""}`}>
-      <nav className={`max-w-7xl mx-auto px-4 flex items-center justify-between transition-all duration-300 ${scrolled ? "h-16" : "h-24"}`}>
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur border-b border-gray-200/30 transition-all duration-300 ${
+        scrolled ? "shadow-md" : ""
+      }`}
+    >
+      <nav
+        className={`max-w-7xl mx-auto px-4 flex items-center justify-between transition-all duration-300 ${
+          scrolled ? "h-16" : "h-24"
+        }`}
+      >
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3">
-          <img
+          <motion.img
             src={LOGO_URL}
             alt="Lord's Heritage House Logo"
-            className={`object-contain transition-all duration-300 ${scrolled ? "h-10 w-10" : "h-20 w-20"}`}
+            variants={logoVariants}
+            animate="animate"
+            className={`object-contain transition-all duration-300 ${
+              scrolled ? "h-10 w-10" : "h-20 w-20"
+            }`}
           />
-          <span className={`font-bold text-blue-950 transition-all duration-300 ${scrolled ? "text-xl" : "text-2xl"}`}>
+          <span
+            className={`font-bold text-blue-950 transition-all duration-300 ${
+              scrolled ? "text-xl" : "text-2xl"
+            }`}
+          >
             Lord's Heritage House
           </span>
         </Link>
 
         {/* Desktop Menu */}
-        <div className="hidden md:flex items-center gap-10" role="navigation" aria-label="Main navigation">
+        <div
+          className="hidden md:flex items-center gap-10"
+          role="navigation"
+          aria-label="Main navigation"
+        >
           {navLinks.map((link) =>
             link.children ? (
               <div key={link.name} className="relative group">
@@ -98,7 +130,9 @@ const Navbar = () => {
                       key={child.path}
                       to={child.path}
                       className={`block py-2 px-3 text-sm text-gray-600 hover:text-blue-950 rounded-md hover:bg-gray-50 ${
-                        location.pathname === child.path ? "text-amber-500 font-semibold bg-amber-50" : ""
+                        location.pathname === child.path
+                          ? "text-amber-500 font-semibold bg-amber-50"
+                          : ""
                       }`}
                     >
                       {child.name}
@@ -143,7 +177,9 @@ const Navbar = () => {
           id="mobile-menu"
           role="navigation"
           aria-label="Mobile navigation"
-          className={`md:hidden bg-white border-t border-gray-200/30 shadow-lg overflow-y-auto max-h-[calc(100vh-${scrolled ? "64px" : "96px"})]`}
+          className={`md:hidden bg-white border-t border-gray-200/30 shadow-lg overflow-y-auto max-h-[calc(100vh-${
+            scrolled ? "64px" : "96px"
+          })]`}
         >
           <div className="px-6 py-6 space-y-5">
             {navLinks.map((link) =>
@@ -152,16 +188,23 @@ const Navbar = () => {
                   <button
                     onClick={() => toggleMobileDropdown(link.name)}
                     className={`w-full text-left font-medium flex justify-between items-center ${
-                        isActive(link.path, link.children) ? "text-amber-500" : "text-gray-600"
+                      isActive(link.path, link.children)
+                        ? "text-amber-500"
+                        : "text-gray-600"
                     }`}
                     aria-expanded={activeMobileDropdown === link.name}
                     aria-haspopup="true"
                     aria-label={`${link.name} submenu`}
                   >
-                    {link.name} 
-                    <ChevronDown size={16} className={`transition-transform ${activeMobileDropdown === link.name ? "rotate-180" : ""}`} />
+                    {link.name}
+                    <ChevronDown
+                      size={16}
+                      className={`transition-transform ${
+                        activeMobileDropdown === link.name ? "rotate-180" : ""
+                      }`}
+                    />
                   </button>
-                  
+
                   {activeMobileDropdown === link.name && (
                     <div className="pl-4 space-y-3 border-l-2 border-gray-100 mt-2">
                       {link.children.map((child) => (

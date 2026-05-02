@@ -1,15 +1,20 @@
 // src/components/Footer.jsx
 import { Link } from "react-router-dom";
-import {
-  Mail,
-  Phone,
-  MapPin,
-  Facebook,
-  Instagram,
-  Youtube,
-} from "lucide-react";
+import { Mail, Phone, MapPin, Facebook, Instagram, Youtube } from "lucide-react";
+import { motion } from "framer-motion";
 
-const LOGO_URL = "https://www.rccg.org/wp-content/uploads/2020/11/rccg-for-web.png";
+const LOGO_URL = "https://rccgworld.org/rccg/assets/images/logos/rccg_logo.png";
+
+const logoVariants = {
+  animate: {
+    x: [-6, 6, -6],
+    transition: {
+      duration: 2.5,
+      repeat: Infinity,
+      ease: "easeInOut",
+    },
+  },
+};
 
 const Footer = () => {
   const quickLinks = [
@@ -28,9 +33,11 @@ const Footer = () => {
           {/* Brand Section */}
           <div className="space-y-6">
             <div className="flex items-center gap-3">
-              <img
+              <motion.img
                 src={LOGO_URL}
                 alt="Lord's Heritage House Logo"
+                variants={logoVariants}
+                animate="animate"
                 className="h-12 w-12 object-contain"
               />
               <span className="font-serif text-2xl font-bold text-amber-400">
