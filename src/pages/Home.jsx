@@ -6,10 +6,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 
 // Assets
-// import heroImage from "../assets/heroImage.jpg";
 import year2026 from "../assets/year2026.jpg";
-// import pic001 from "../assets/pic001.jpeg";
-// import pic002 from "../assets/pic002.jpeg";
 import pic003 from "../assets/pic003.jpeg";
 import VIEW2 from "../assets/VIEW2.jpg.jpeg";
 import VIEW3 from "../assets/VIEW3.jpg.jpeg";
@@ -57,9 +54,7 @@ const services = [
   },
   {
     day: "Tuesdays",
-    items: [
-      { name: "Digging Deep", time: "5:00 PM" },
-    ],
+    items: [{ name: "Digging Deep", time: "5:00 PM" }],
   },
   {
     day: "Thursdays",
@@ -67,15 +62,11 @@ const services = [
   },
   {
     day: "Fridays",
-    items: [
-      { name: "Congregational Vigil", time: "10:00 PM", note: "Last Friday" },
-    ],
+    items: [{ name: "Congregational Vigil", time: "10:00 PM", note: "Last Friday" }],
   },
   {
     day: "Sundays",
-    items: [
-      { name: "Women of Destiny Meeting", time: "12:00 PM", note: "3rd Sunday" },
-    ],
+    items: [{ name: "Women of Destiny Meeting", time: "12:00 PM", note: "3rd Sunday" }],
   },
 ];
 
@@ -130,7 +121,8 @@ const Home = () => {
 
   return (
     <div className="overflow-x-hidden">
-      {/* HERO */}
+
+      {/* ── HERO ─────────────────────────────────────────────────────────── */}
       <section className="relative h-[90vh] md:min-h-[115vh] flex items-center justify-center overflow-hidden bg-black">
         {heroImages.map((img, index) => (
           <div
@@ -146,18 +138,14 @@ const Home = () => {
             }}
           />
         ))}
-
         <div className="absolute inset-0 bg-linear-to-b from-black/60 via-transparent to-black/90" />
-
         <div className={`relative text-center text-white px-4 md:px-6 z-10 w-full max-w-5xl transition-all duration-1000 ${showContent ? "translate-y-0 opacity-100" : "translate-y-12 opacity-0"}`}>
           <h1 className="text-3xl sm:text-4xl md:text-7xl font-serif font-bold mb-4 md:mb-6 drop-shadow-2xl leading-tight">
             {typedText}<span className="animate-pulse text-amber-400">|</span>
           </h1>
-
           <p className="text-base sm:text-lg md:text-2xl mb-8 md:mb-12 max-w-xs sm:max-w-md md:max-w-2xl mx-auto drop-shadow-lg font-medium opacity-95">
             Join our welcoming community as we <span className="text-amber-400 font-bold">grow together</span> in faith and love.
           </p>
-
           <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center">
             <Link to="/information/heritage-in-number" className="w-full sm:w-auto px-8 md:px-10 py-3 md:py-4 bg-amber-500 text-[#0B1B3F] font-black rounded-full hover:bg-amber-400 transition shadow-xl flex items-center justify-center">
               Learn More <ArrowRight className="ml-2 h-5 w-5" />
@@ -169,7 +157,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* DAILY VERSE */}
+      {/* ── DAILY VERSE ──────────────────────────────────────────────────── */}
       <section className="py-20 bg-[#FFF4E1]">
         <div className="container mx-auto px-6 text-center max-w-3xl">
           <div className="flex items-center justify-center gap-3 mb-6 text-amber-600 font-semibold uppercase tracking-widest">
@@ -183,14 +171,14 @@ const Home = () => {
         </div>
       </section>
 
-      {/* YEAR IMAGE */}
+      {/* ── YEAR IMAGE ───────────────────────────────────────────────────── */}
       <section className="py-12 text-center bg-white">
         <div className="max-w-6xl mx-auto px-4">
           <img src={year2026} alt="Year 2026" className="rounded-2xl shadow-2xl mx-auto w-full" />
         </div>
       </section>
 
-      {/* QUICK LINKS */}
+      {/* ── QUICK LINKS ──────────────────────────────────────────────────── */}
       <section className="py-20 bg-[#142A5A]">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-serif font-bold mb-12 text-[#FFD700]">Explore More</h2>
@@ -210,7 +198,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* GIVING */}
+      {/* ── GIVING ───────────────────────────────────────────────────────── */}
       <section className="py-24 bg-slate-50">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center mb-16">
@@ -223,7 +211,6 @@ const Home = () => {
               </p>
             </motion.div>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
             <motion.div whileHover={{ y: -10 }} className="bg-white p-10 rounded-[2.5rem] shadow-xl border border-slate-100 relative group">
               <h3 className="text-sm font-black tracking-widest text-amber-600 uppercase mb-6">Tithes & Offerings</h3>
@@ -237,7 +224,6 @@ const Home = () => {
                 </div>
               </div>
             </motion.div>
-
             <motion.div whileHover={{ y: -10 }} className="bg-blue-950 p-10 rounded-[2.5rem] shadow-2xl text-white relative group">
               <h3 className="text-sm font-black tracking-widest text-amber-400 uppercase mb-6">Building & Projects</h3>
               <div className="space-y-4">
@@ -254,47 +240,27 @@ const Home = () => {
         </div>
       </section>
 
-      {/* OUR SERVICES — placed after Giving */}
+      {/* ── OUR SERVICES ─────────────────────────────────────────────────── */}
       <section className="py-20 bg-[#0B1B3F] px-4 md:px-8">
         <div className="max-w-5xl mx-auto">
-
-          {/* Section header */}
           <div className="text-center mb-14">
-            <h2 className="text-4xl md:text-5xl font-serif font-bold text-white uppercase tracking-widest mb-4">
-              Our Services
-            </h2>
+            <h2 className="text-4xl md:text-5xl font-serif font-bold text-white uppercase tracking-widest mb-4">Our Services</h2>
             <div className="w-16 h-1 bg-amber-400 mx-auto rounded-full mb-6" />
             <p className="text-slate-400 text-lg max-w-xl mx-auto leading-relaxed">
-              We hold services on Sundays, Tuesdays, Thursdays and Fridays —
-              designed to serve different needs of human existence.
+              We hold services on Sundays, Tuesdays, Thursdays and Fridays — designed to serve different needs of human existence.
             </p>
           </div>
-
-          {/* Single rounded container — all days inside, separated by dividers */}
           <div className="rounded-3xl overflow-hidden border border-white/10">
             {services.map((col, colIdx) => (
-              <div
-                key={col.day}
-                className={`px-8 md:px-14 py-8 md:py-10 ${
-                  colIdx % 2 === 0 ? "bg-white/5" : "bg-white/[0.02]"
-                } ${colIdx !== services.length - 1 ? "border-b border-white/10" : ""}`}
-              >
-                {/* Day label */}
-                <p className="text-amber-400 text-xs font-black uppercase tracking-[0.2em] mb-5">
-                  {col.day}
-                </p>
-
-                {/* Services — laid out horizontally, wraps on small screens */}
+              <div key={col.day}
+                className={`px-8 md:px-14 py-8 md:py-10 ${colIdx % 2 === 0 ? "bg-white/5" : "bg-white/[0.02]"} ${colIdx !== services.length - 1 ? "border-b border-white/10" : ""}`}>
+                <p className="text-amber-400 text-xs font-black uppercase tracking-[0.2em] mb-5">{col.day}</p>
                 <div className="flex flex-wrap gap-x-10 gap-y-6">
                   {col.items.map((item, i) => (
                     <div key={i} className="flex flex-col gap-1">
-                      <span className="text-white text-xl md:text-2xl font-semibold leading-snug">
-                        {item.name}
-                      </span>
+                      <span className="text-white text-xl md:text-2xl font-semibold leading-snug">{item.name}</span>
                       {item.note && (
-                        <span className="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-400/10 border border-amber-400/25 rounded px-2 py-0.5 w-fit">
-                          {item.note}
-                        </span>
+                        <span className="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-400/10 border border-amber-400/25 rounded px-2 py-0.5 w-fit">{item.note}</span>
                       )}
                       <span className="text-slate-400 text-base">{item.time}</span>
                     </div>
@@ -306,7 +272,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* FELLOWSHIPS */}
+      {/* ── FELLOWSHIPS ──────────────────────────────────────────────────── */}
       <section className="py-20 bg-gray-100">
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-2xl mx-auto mb-12">
@@ -314,12 +280,10 @@ const Home = () => {
               Connect, Grow & Thrive
             </h2>
             <p className="text-slate-600 italic text-lg border-l-4 border-amber-500 pl-4 py-2 bg-amber-500/5 rounded-r-xl">
-              "From him the whole body, joined and held together by every supporting ligament, 
-              grows and builds itself up in love, as each part does its work."
+              "From him the whole body, joined and held together by every supporting ligament, grows and builds itself up in love, as each part does its work."
               <span className="block font-bold mt-1 text-amber-700">— Ephesians 4:16</span>
             </p>
           </div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
             {[
               { title: "Youth & Adult", icon: Users, link: "youth-and-adult" },
@@ -327,13 +291,8 @@ const Home = () => {
               { title: "Women Fellowship", icon: Heart, link: "women-fellowship" },
               { title: "Men Fellowship", icon: Speaker, link: "men-fellowship" },
             ].map((group, idx) => (
-              <a 
-                key={idx} 
-                href={`/fellowships/${group.link}`} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="group flex flex-col items-center p-8 bg-white rounded-3xl shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-transparent hover:border-amber-200 cursor-pointer"
-              >
+              <a key={idx} href={`/fellowships/${group.link}`} target="_blank" rel="noopener noreferrer"
+                className="group flex flex-col items-center p-8 bg-white rounded-3xl shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-transparent hover:border-amber-200 cursor-pointer">
                 <div className="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-amber-400 transition-colors">
                   <group.icon className="h-8 w-8 text-amber-600 group-hover:text-white" />
                 </div>
@@ -344,14 +303,13 @@ const Home = () => {
         </div>
       </section>
 
-      {/* DECISION FORM */}
+      {/* ── DECISION FORM ────────────────────────────────────────────────── */}
       <section className="py-16 bg-[#FFF4E1]">
         <div className="max-w-4xl mx-auto px-4 rounded-3xl shadow-xl p-8 md:p-12 border-t-8 border-[#FFD700] bg-white">
           <div className="text-center mb-8">
             <Heart className="h-12 w-12 mx-auto mb-4 animate-pulse text-red-500" />
             <h2 className="text-3xl font-bold text-[#0B1B3F]">Give Your Life to Christ</h2>
           </div>
-
           {!submitted ? (
             <form onSubmit={handleDecisionSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -372,6 +330,7 @@ const Home = () => {
           )}
         </div>
       </section>
+
     </div>
   );
 };

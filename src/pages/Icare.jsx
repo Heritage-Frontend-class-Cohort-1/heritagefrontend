@@ -510,7 +510,7 @@ const ICare = () => {
                 Speak to the iCare desk on Sunday or contact us to register your interest.
               </p>
             </div>
-            <Link to="/explore-heritage/contact-us" style={{
+            <Link to="/pages/tech" style={{
               display: "inline-flex", alignItems: "center", gap: "10px",
               background: "#F59E0B", color: "#0B1B3F",
               padding: "16px 32px", borderRadius: "10px",

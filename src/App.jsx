@@ -1,6 +1,6 @@
 // src/App.jsx
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
 
 // Navbar and Footer
 import Navbar from "./components/Navbar"; 
@@ -10,11 +10,10 @@ import Footer from "./components/Footer";
 import Home from './pages/Home';
 import AboutUs from './pages/information/AboutUs';
 import OurJourney from './pages/information/OurJourney';
-import HeritageInNumber  from './pages/information/HeritageInNumbers';
+import HeritageInNumber from './pages/information/HeritageInNumbers';
 import OurLeadership from './pages/information/OurShepherds';
 import WhatWeBelieve from './pages/information/WhatWeBelieve';
 import MissionVision from './pages/information/OurPurpose';
-
 import Sermons from './pages/Sermons';
 import ExploreHeritage from './pages/explore/ExploreHeritage';
 import AmNewHere from './pages/explore/AmNewHere';
@@ -28,48 +27,46 @@ import Giving from './pages/Giving';
 import Icare from './pages/Icare';
 import LiveService from './pages/LiveService';
 import FellowshipPage from './pages/Fellowship';
+import Tech from "./pages/Tech";
+import AttendancePage from "./pages/AttendacePage";
 
 // Admin pages
 import Login from './pages/admin/Login';
 import Dashboard from './pages/admin/Dashboard';
 import PrivateAdminRoute from './pages/admin/PrivateAdminroute';
 import ResetPassword from './pages/ResetPassword';
-
-// Super Admin pages
 import SuperAdminAuth from './pages/admin/SuperAdminAuth';
 import SuperAdminDashboard from './pages/admin/SuperAdminDashboard';
 import PrivateSuperAdminRoute from './pages/admin/SuperAdminRoute';
+import TechCohortDashboard from "./pages/admin/TechDashboard";
+import TechApplicantDetail from "./pages/admin/TechDetails";
 
-// Attendance page
-import AttendancePage from "./pages/AttendacePage";
-
-const Layout = ({ children }) => {
-  return (
-    <div className="app-wrapper">
-      <Navbar />
-      <main className="main-content">
-        {children}
-      </main>
-      <Footer />
-    </div>
-  );
-};
+// Layout for public pages only
+const PublicLayout = () => (
+  <div className="app-wrapper">
+    <Navbar />
+    <main className="main-content">
+      <Outlet />
+    </main>
+    <Footer />
+  </div>
+);
 
 function App() {
   return (
     <BrowserRouter>
-      <Layout>
-        <Routes>
-          {/* ── Public routes ── */}
+      <Routes>
+
+        {/* ── Public routes — WITH Navbar & Footer ── */}
+        <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/information" element={<AboutUs />}>
             <Route path="journey" element={<OurJourney />} />
-            <Route path="heritage-in-number" element={<HeritageInNumber/>} />
+            <Route path="heritage-in-number" element={<HeritageInNumber />} />
             <Route path="leadership" element={<OurLeadership />} />
             <Route path="believe" element={<WhatWeBelieve />} />
             <Route path="mission-vision" element={<MissionVision />} />
           </Route>
-
           <Route path="/sermons" element={<Sermons />} />
           <Route path="/live-service" element={<LiveService />} />
           <Route path="/explore-heritage" element={<ExploreHeritage />}>
@@ -81,37 +78,33 @@ function App() {
             <Route path="update-profile" element={<UpdateProfilePage />} />
             <Route path="counselling" element={<Counselling />} />
           </Route>
-
           <Route path="/icare" element={<Icare />} />
+          <Route path="/pages/tech" element={<Tech />} />
           <Route path="/giving" element={<Giving />} />
           <Route path="/fellowships/:type" element={<FellowshipPage />} />
-
           <Route path="/attendance" element={<AttendancePage />} />
-
-          {/* ── Admin routes ── */}
-          <Route path="/Admin/login" element={<Login />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
-          <Route
-            path="/Admin/dashboard"
-            element={
-              <PrivateAdminRoute>
-                <Dashboard />
-              </PrivateAdminRoute>
-            }
-          />
+        </Route>
 
-          {/* ── Super Admin routes ── */}
-          <Route path="/superadmin/login" element={<SuperAdminAuth />} />
-          <Route
-            path="/superadmin/dashboard"
-            element={
-              <PrivateSuperAdminRoute>
-                <SuperAdminDashboard />
-              </PrivateSuperAdminRoute>
-            }
-          />
-        </Routes>
-      </Layout>
+        {/* ── Admin routes — NO Navbar/Footer ── */}
+        <Route path="/Admin/login" element={<Login />} />
+        <Route path="/Admin/dashboard" element={
+          <PrivateAdminRoute><Dashboard /></PrivateAdminRoute>
+        } />
+        <Route path="/Admin/cohort" element={
+          <PrivateAdminRoute><TechCohortDashboard /></PrivateAdminRoute>
+        } />
+        <Route path="/Admin/cohort/:id" element={
+          <PrivateAdminRoute><TechApplicantDetail /></PrivateAdminRoute>
+        } />
+
+        {/* ── Super Admin routes — NO Navbar/Footer ── */}
+        <Route path="/superadmin/login" element={<SuperAdminAuth />} />
+        <Route path="/superadmin/dashboard" element={
+          <PrivateSuperAdminRoute><SuperAdminDashboard /></PrivateSuperAdminRoute>
+        } />
+
+      </Routes>
     </BrowserRouter>
   );
 }
