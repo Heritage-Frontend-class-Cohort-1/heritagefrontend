@@ -10,6 +10,7 @@ import year2026 from "../assets/year2026.jpg";
 import pic003 from "../assets/pic003.jpeg";
 import VIEW2 from "../assets/VIEW2.jpg.jpeg";
 import VIEW3 from "../assets/VIEW3.jpg.jpeg";
+import cohort2 from "../assets/cohort2.jpeg";
 
 const colors = {
   deepNavy: "#0B1B3F",
@@ -177,6 +178,54 @@ const Home = () => {
           <img src={year2026} alt="Year 2026" className="rounded-2xl shadow-2xl mx-auto w-full" />
         </div>
       </section>
+    {/* ── TECH SPACE ───────────────────────────────────────────────────── */}
+<section className="bg-[#06103a] py-16">
+  <div className="max-w-6xl mx-auto px-4 py-12">
+
+    <div className="text-center mb-8">
+      <span className="text-xs font-bold tracking-[0.2em] uppercase text-cyan-400 block mb-3">
+        Lords Heritage Tech Space
+      </span>
+      <h2 className="text-3xl md:text-4xl font-extrabold text-white">
+        Cohort 2 Registration is{" "}
+        <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">
+          Now Open
+        </span>
+      </h2>
+    </div>
+
+    <div className="relative">
+      <div className="absolute -inset-3 bg-gradient-to-tr from-cyan-500/30 to-purple-600/30 rounded-3xl blur-2xl" />
+      <img
+        src={cohort2}
+        alt="Cohort 2"
+        className="relative rounded-2xl shadow-2xl mx-auto w-full"
+      />
+    </div>
+
+    {/* <h1 className="text-center text-slate-400 text-lg md:text-xl font-semibold mt-6">
+      Join our intensive frontend development training and take your skills to the next level.
+    </h1> */}
+
+    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
+      <Link
+        to="/pages/tech"
+        className="px-10 py-4 bg-gradient-to-r from-cyan-400 to-purple-500 text-[#06103a] font-extrabold text-sm uppercase tracking-widest rounded-md shadow-[0_0_30px_rgba(0,212,255,0.4)] hover:shadow-[0_0_50px_rgba(0,212,255,0.6)] hover:-translate-y-0.5 transition-all"
+      >
+        ✦ Apply for Cohort 2
+      </Link>
+      <Link
+        to="/pages/tech"
+        className="text-cyan-400 text-sm font-semibold underline underline-offset-4 hover:text-white transition-colors"
+      >
+        Learn more →
+      </Link>
+    </div>
+
+  </div>
+</section>
+
+      
 
       {/* ── QUICK LINKS ──────────────────────────────────────────────────── */}
       <section className="py-20 bg-[#142A5A]">
